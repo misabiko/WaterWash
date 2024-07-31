@@ -31,13 +31,28 @@ public class WaterParticles : MonoBehaviour {
 				Physics.Raycast(collisionEvent.intersection + collisionEvent.normal / 2, -collisionEvent.normal, out RaycastHit hitInfo, 1f);
 				if (hitInfo.collider == collisionEvent.colliderComponent) {
 					Vector2 textureCoord = hitInfo.textureCoord;
+					var centerPixel = new Vector2Int(
+						(int)(textureCoord.x * paintable.DirtMaskTexture.width),
+						(int)(textureCoord.y * paintable.DirtMaskTexture.height)
+					);
 					for (int x = -brushSize; x <= brushSize; ++x) {
 						for (int y = -brushSize; y <= brushSize; ++y) {
-							int pixelX = Mathf.Clamp((int)(textureCoord.x * paintable.DirtMaskTexture.width) + x, 0, paintable.DirtMaskTexture.width);
-							int pixelY = Mathf.Clamp((int)(textureCoord.y * paintable.DirtMaskTexture.height) + y, 0, paintable.DirtMaskTexture.height);
+							var pixelPos = new Vector2Int(
+								Mathf.Clamp(centerPixel.x + x, 0, paintable.DirtMaskTexture.width),
+								Mathf.Clamp(centerPixel.y + y, 0, paintable.DirtMaskTexture.height)
+							);
 
 
-							paintable.DirtMaskTexture.SetPixel(pixelX, pixelY, draw ? Color.black : Color.clear);
+							//TODO Smooth brush
+							// float alpha = 1f - Vector2.Distance(centerPixel, pixelPos) / brushSize;
+							// //TODO Use GetPixels instead of GetPixel every time
+							// Color pixelColor = paintable.DirtMaskTexture.GetPixel(pixelPos.x, pixelPos.y);
+							// pixelColor.a = Mathf.Clamp01(pixelColor.a + (draw ? alpha : -alpha));
+
+							if (Vector2.Distance(pixelPos, centerPixel) > brushSize)
+								continue;
+							
+							paintable.DirtMaskTexture.SetPixel(pixelPos.x, pixelPos.y, draw ? Color.black : Color.clear);
 						}
 					}
 					paintable.DirtMaskTexture.Apply();
