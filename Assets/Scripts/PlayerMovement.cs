@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-//TODO Probably swap CharacterController with custom code later
 [RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
 public class PlayerMovement : MonoBehaviour {
 	[Min(0f)]
@@ -32,7 +31,7 @@ public class PlayerMovement : MonoBehaviour {
 			velocity.y = 0f;
 
 		var moveInput = moveAction.ReadValue<Vector2>();
-		Vector3 hVel = new Vector3(velocity.x, 0f, velocity.z);
+		var hVel = new Vector3(velocity.x, 0f, velocity.z);
 		if (moveInput != Vector2.zero) {
 			Vector3 camForward = Camera.main.transform.forward;
 			camForward.y = 0;
@@ -52,7 +51,7 @@ public class PlayerMovement : MonoBehaviour {
 			if (hVel.sqrMagnitude < deceleration * deceleration * Time.deltaTime * Time.deltaTime) {
 				velocity.x = 0f;
 				velocity.z = 0f;
-			}else {
+			} else {
 				Vector3 deceleratedHVel = hVel - hVel.normalized * deceleration * Time.deltaTime;
 				velocity.x = deceleratedHVel.x;
 				velocity.z = deceleratedHVel.z;
@@ -66,7 +65,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		controller.Move(velocity * Time.deltaTime);
 	}
-	
+
 	Vector2 HorizontalVelocity() => new(velocity.x, velocity.z);
 
 	void OnGUI() {

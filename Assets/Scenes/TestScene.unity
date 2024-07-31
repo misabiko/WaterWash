@@ -527,7 +527,7 @@ MonoBehaviour:
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
   TargetOffset: {x: 0, y: 0, z: 0}
-  Damping: {x: 0.5, y: 0.5}
+  Damping: {x: 0.5, y: 0}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -548,7 +548,7 @@ MonoBehaviour:
   TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 1, y: 1, z: 1}
+    PositionDamping: {x: 1, y: 0.1, z: 1}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
@@ -568,7 +568,7 @@ MonoBehaviour:
   RecenteringTarget: 2
   HorizontalAxis:
     Value: 0
-    Center: 0
+    Center: -175.2901
     Range: {x: -180, y: 180}
     Wrap: 1
     Recentering:
@@ -582,9 +582,9 @@ MonoBehaviour:
     Range: {x: -10, y: 45}
     Wrap: 0
     Recentering:
-      Enabled: 0
-      Wait: 1
-      Time: 2
+      Enabled: 1
+      Wait: 0
+      Time: 0.5
     Restrictions: 0
   RadialAxis:
     Value: 1
