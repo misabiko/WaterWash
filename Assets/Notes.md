@@ -1,5 +1,9 @@
 ﻿# Refs
+https://gamefaqs.gamespot.com/switch/200275-super-mario-odyssey/faqs/75301/controls
 http://www.jeremysphysicsproject.com/gravity.html
+[Recreating Splatoon's Ink System | Mix and Jam](https://www.youtube.com/watch?v=FR618z5xEiM)
+[Splatoon - Painting Effect in Unity](https://www.youtube.com/watch?v=YUWfHX_ZNCw)
+[How it's Made: Rover Mechanic Simulator | Cleaning Minigame - How to Paint a Texture Unity Tutorial](https://www.youtube.com/watch?v=Xss4__kgYiY)
 # TODOs
 - 0 Held jump
 - 0 Texture mask
