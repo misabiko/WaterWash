@@ -70,12 +70,12 @@
                 },
                 {
                     "name": "Spray",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "2272aad0-e026-43e0-a6dc-09e2e9b81578",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -382,7 +382,7 @@
                     "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Gamepad",
                     "action": "Spray",
                     "isComposite": false,
                     "isPartOfComposite": false

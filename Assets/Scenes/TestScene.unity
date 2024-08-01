@@ -6122,6 +6122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d77370fedd95c4469f851ac93ffd60d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerInput: {fileID: 1586036143}
   brushSize: 5
 --- !u!1001 &1400874364
 PrefabInstance:
@@ -6682,9 +6683,9 @@ MonoBehaviour:
   sprayAimCamera: {fileID: 1071141308}
   sprayTransform: {fileID: 1120394590}
   moveSpeed: 5
-  jumpForce: 15
-  longJumpDuration: 0.4
-  longJumpForce: 10
+  jumpForce: 10
+  longJumpDuration: 0.5
+  longJumpForce: 20
   acceleration: 20
   deceleration: 20
   aimRotateSpeed: 100

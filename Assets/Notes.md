@@ -5,18 +5,18 @@ http://www.jeremysphysicsproject.com/gravity.html
 [Splatoon - Painting Effect in Unity](https://www.youtube.com/watch?v=YUWfHX_ZNCw)
 [How it's Made: Rover Mechanic Simulator | Cleaning Minigame - How to Paint a Texture Unity Tutorial](https://www.youtube.com/watch?v=Xss4__kgYiY)
 # TODOs
+- 2 Hover nuzzle mode
+- 2 Wall jump
 - 1 Have dirt mask pixel same size regardless of mesh scale
-- 1 Hover nuzzle mode
-- 1 Wall jump
 - 1 Crouch
 	- 0 Crouch backflip jump
+- 1 Basic player model
+- 1 Jump animation
+- 1 Run animation
 - 0 Get dirtiness percentage
 - 0 Make particles look like water
 - 0 Plunge move
 	- 0 Water slide after plunge
-- 0 Basic player model
-- 0 Jump animation
-- 0 Run animation
 - 0 Dirtiness texture
 - 0 Spin jump
 - 0 Coyote time

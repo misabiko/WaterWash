@@ -4,24 +4,34 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(ParticleSystem))]
 public class WaterParticles : MonoBehaviour {
+	[SerializeField] PlayerInput playerInput;
 	[Min(0)]
 	[SerializeField] int brushSize = 0;
+
+	InputAction sprayAction;
+
 	new ParticleSystem particleSystem;
 	List<ParticleCollisionEvent> collisionEvents;
+	ParticleSystem.EmissionModule emission;
+	float baseEmissionRate;
 
 	void Awake() {
 		particleSystem = GetComponent<ParticleSystem>();
 		collisionEvents = new List<ParticleCollisionEvent>();
+		emission = particleSystem.emission;
+		baseEmissionRate = emission.rateOverTime.constant;
 	}
-	
+
 	void Update() {
 		if (Keyboard.current.spaceKey.wasPressedThisFrame) {
 			draw = !draw;
 			print(draw);
 		}
+		
+		emission.rateOverTime = playerInput.actions["Spray"].ReadValue<float>() * baseEmissionRate;
 	}
 
-	bool draw = true;
+	bool draw = false;
 
 	void OnParticleCollision(GameObject other) {
 		int numCollisionEvents = particleSystem.GetCollisionEvents(other, collisionEvents);
@@ -51,10 +61,11 @@ public class WaterParticles : MonoBehaviour {
 
 							if (Vector2.Distance(pixelPos, centerPixel) > brushSize)
 								continue;
-							
+
 							paintable.DirtMaskTexture.SetPixel(pixelPos.x, pixelPos.y, draw ? Color.black : Color.clear);
 						}
 					}
+
 					paintable.DirtMaskTexture.Apply();
 				}
 			}
