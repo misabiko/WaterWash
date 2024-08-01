@@ -1,8 +1,14 @@
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
 public class PlayerMovement : MonoBehaviour {
+	[SerializeField] CinemachineInputAxisController camInputAxisController;
+	[SerializeField] CinemachineCamera sprayAimCamera;
+	[SerializeField] Transform sprayTransform;
+
+	[Header("Parameters")]
 	[Min(0f)]
 	[SerializeField] float moveSpeed = 5f;
 	//I say jumpForce, but it's really acceleration, with mass of 1
@@ -16,10 +22,18 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField] float acceleration = 5f;
 	[Min(0f)]
 	[SerializeField] float deceleration = 1f;
+	[Min(0f)]
+	[SerializeField] float aimRotateSpeed = 1f;
+	//Unity doesn't have a MaxAttribute...
+	[SerializeField] float minYSprayAngle = -1f;
+	[Min(0f)]
+	[SerializeField] float maxYSprayAngle = 1f;
 
 	CharacterController controller;
 	InputAction moveAction;
+	InputAction lookAction;
 	InputAction jumpAction;
+	InputAction aimAction;
 
 	Vector3 velocity;
 	//Not null if the player is holding jump
@@ -30,10 +44,31 @@ public class PlayerMovement : MonoBehaviour {
 
 		var playerInput = GetComponent<PlayerInput>();
 		moveAction = playerInput.actions["Move"];
+		lookAction = playerInput.actions["Look"];
 		jumpAction = playerInput.actions["Jump"];
+		aimAction = playerInput.actions["Aim"];
 	}
 
 	void Update() {
+		if (aimAction.WasPressedThisFrame()) {
+			// camInputAxisController.enabled = false;
+			sprayAimCamera.gameObject.SetActive(true);
+		} else if (aimAction.WasReleasedThisFrame()) {
+			// camInputAxisController.enabled = true;
+			sprayAimCamera.gameObject.SetActive(false);
+		}
+
+		if (aimAction.IsPressed()) {
+			var look = lookAction.ReadValue<Vector2>();
+			transform.Rotate(Vector3.up, look.x * aimRotateSpeed * Time.deltaTime);
+			sprayTransform.Rotate(Vector3.right, -look.y * aimRotateSpeed * Time.deltaTime);
+
+			if (sprayTransform.localEulerAngles.x >= 180f)
+				sprayTransform.localEulerAngles = new Vector3(Mathf.Max(sprayTransform.localEulerAngles.x, 360f + minYSprayAngle), 0, 0);
+			else
+				sprayTransform.localEulerAngles = new Vector3(Mathf.Min(sprayTransform.localEulerAngles.x, maxYSprayAngle), 0, 0);
+		}
+
 		//Could move this with the rest of velocity.y stuff?
 		if (controller.isGrounded && velocity.y < 0) {
 			velocity.y = 0f;
@@ -54,9 +89,11 @@ public class PlayerMovement : MonoBehaviour {
 			velocity.x = clampedHVel.x;
 			velocity.z = clampedHVel.z;
 
-			//TODO Properly rotate
-			if (moveDirection != Vector3.zero)
-				transform.forward = moveDirection;
+			if (!aimAction.IsPressed()) {
+				//TODO Properly rotate
+				if (moveDirection != Vector3.zero)
+					transform.forward = moveDirection;
+			}
 		} else {
 			if (hVel.sqrMagnitude < deceleration * deceleration * Time.deltaTime * Time.deltaTime) {
 				velocity.x = 0f;
@@ -85,10 +122,8 @@ public class PlayerMovement : MonoBehaviour {
 		controller.Move(velocity * Time.deltaTime);
 	}
 
-	Vector2 HorizontalVelocity() => new(velocity.x, velocity.z);
-
 	void OnGUI() {
 		GUI.Label(new Rect(10, 10, Screen.width, 20), $"Velocity: {velocity}");
-		GUI.Label(new Rect(10, 30, Screen.width, 20), $"HVel: {HorizontalVelocity().magnitude:F2} m/s");
+		GUI.Label(new Rect(10, 30, Screen.width, 20), $"HVel: {(new Vector2(velocity.x, velocity.z)).magnitude:F2} m/s");
 	}
 }

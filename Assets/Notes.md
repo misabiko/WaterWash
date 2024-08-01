@@ -5,7 +5,6 @@ http://www.jeremysphysicsproject.com/gravity.html
 [Splatoon - Painting Effect in Unity](https://www.youtube.com/watch?v=YUWfHX_ZNCw)
 [How it's Made: Rover Mechanic Simulator | Cleaning Minigame - How to Paint a Texture Unity Tutorial](https://www.youtube.com/watch?v=Xss4__kgYiY)
 # TODOs
-- 1 Aim mode
 - 1 Have dirt mask pixel same size regardless of mesh scale
 - 1 Hover nuzzle mode
 - 1 Wall jump
