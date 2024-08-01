@@ -5,8 +5,13 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour {
 	[Min(0f)]
 	[SerializeField] float moveSpeed = 5f;
+	//I say jumpForce, but it's really acceleration, with mass of 1
 	[Min(0f)]
 	[SerializeField] float jumpForce = 5f;
+	[Min(0f)]
+	[SerializeField] float longJumpDuration = 0.5f;
+	[Min(0f)]
+	[SerializeField] float longJumpForce = 3f;
 	[Min(0f)]
 	[SerializeField] float acceleration = 5f;
 	[Min(0f)]
@@ -17,6 +22,8 @@ public class PlayerMovement : MonoBehaviour {
 	InputAction jumpAction;
 
 	Vector3 velocity;
+	//Not null if the player is holding jump
+	float? jumpStartTime;
 
 	void Awake() {
 		controller = GetComponent<CharacterController>();
@@ -27,8 +34,11 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void Update() {
-		if (controller.isGrounded && velocity.y < 0)
+		//Could move this with the rest of velocity.y stuff?
+		if (controller.isGrounded && velocity.y < 0) {
 			velocity.y = 0f;
+			jumpStartTime = null;
+		}
 
 		var moveInput = moveAction.ReadValue<Vector2>();
 		var hVel = new Vector3(velocity.x, 0f, velocity.z);
@@ -58,10 +68,19 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 
-		if (jumpAction.triggered && controller.isGrounded)
+		if (jumpStartTime != null) {
+			if (!jumpAction.IsPressed() || Time.time - jumpStartTime > longJumpDuration)
+				jumpStartTime = null;
+			else
+				velocity.y += longJumpForce * Time.deltaTime;
+		} else if (jumpAction.WasPressedThisFrame() && controller.isGrounded) {
+			//Setting velY to a jumpVelocity vs adding a jumpForce and adding the gravity afterward?
+			//The latter is physically correct, and would support changing the gravity, but I feel weird about the impulse being multiplied by deltaTime (either on jumpForce or gravity)
 			velocity.y = jumpForce;
-		else
-			velocity.y += Physics.gravity.y * Time.deltaTime;
+			jumpStartTime = Time.time;
+		}
+
+		velocity.y += Physics.gravity.y * Time.deltaTime;
 
 		controller.Move(velocity * Time.deltaTime);
 	}
