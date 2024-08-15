@@ -4,6 +4,7 @@ http://www.jeremysphysicsproject.com/gravity.html
 [Recreating Splatoon's Ink System | Mix and Jam](https://www.youtube.com/watch?v=FR618z5xEiM)
 [Splatoon - Painting Effect in Unity](https://www.youtube.com/watch?v=YUWfHX_ZNCw)
 [How it's Made: Rover Mechanic Simulator | Cleaning Minigame - How to Paint a Texture Unity Tutorial](https://www.youtube.com/watch?v=Xss4__kgYiY)
+https://x.com/MortMort_/status/1660268036899700743
 # TODOs
 - 2 Hover nuzzle mode
 - 2 Wall jump
@@ -13,6 +14,7 @@ http://www.jeremysphysicsproject.com/gravity.html
 - 1 Basic player model
 - 1 Jump animation
 - 1 Run animation
+- 0 Test level
 - 0 Get dirtiness percentage
 - 0 Make particles look like water
 - 0 Plunge move
@@ -21,6 +23,7 @@ http://www.jeremysphysicsproject.com/gravity.html
 - 0 Spin jump
 - 0 Coyote time
 - 0 Moving platforms
+- 0 Objects coming out of ground when cleaned
 
 - 0 Wall slide
   - 0 Wall horizontal slide
