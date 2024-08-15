@@ -6,7 +6,6 @@ http://www.jeremysphysicsproject.com/gravity.html
 [How it's Made: Rover Mechanic Simulator | Cleaning Minigame - How to Paint a Texture Unity Tutorial](https://www.youtube.com/watch?v=Xss4__kgYiY)
 https://x.com/MortMort_/status/1660268036899700743
 # TODOs
-- 3 Wall jump
 - 2 Hover nuzzle mode
 - 2 Basic player model
 - 1 Have dirt mask pixel same size regardless of mesh scale
@@ -26,7 +25,7 @@ https://x.com/MortMort_/status/1660268036899700743
 - 0 Objects coming out of ground when cleaned
 - 0 Better 3rd person to aiming camera transition
 - 0 Water resource
-- 1 Wall slide
+- 0 Disable water particles on boot
 
 ## More optional
 - 1 Splash water on wall to slide further
