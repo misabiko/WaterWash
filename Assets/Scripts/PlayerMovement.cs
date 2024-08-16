@@ -9,40 +9,29 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField] Transform sprayTransform;
 
 	[Header("Parameters")]
-	//TODO Put attributes together
-	[Min(0f)]
-	[SerializeField] float moveSpeed = 5f;
+	[SerializeField, Min(0)] float moveSpeed = 5f;
 	//I say jumpForce, but it's really acceleration, with mass of 1
-	[Min(0f)]
-	[SerializeField] float jumpForce = 5f;
-	[Min(0f)]
-	[SerializeField] float longJumpDuration = 0.5f;
-	[Min(0f)]
-	[SerializeField] float longJumpForce = 3f;
-	[Min(0f)]
-	[SerializeField] float acceleration = 5f;
-	[Min(0f)]
-	[SerializeField] float deceleration = 1f;
+	[SerializeField, Min(0)] float jumpForce = 5f;
+	[SerializeField, Min(0)] float longJumpDuration = 0.5f;
+	[SerializeField, Min(0)] float longJumpForce = 3f;
+	[SerializeField, Min(0)] float acceleration = 5f;
+	[SerializeField, Min(0)] float deceleration = 1f;
 
-	[Min(0f)]
-	[SerializeField] float aimRotateSpeed = 1f;
+	[SerializeField, Min(0)] float aimRotateSpeed = 1f;
 	//Unity doesn't have a MaxAttribute...
 	[SerializeField] float minYSprayAngle = -1f;
-	[Min(0f)]
-	[SerializeField] float maxYSprayAngle = 1f;
+	[SerializeField, Min(0)] float maxYSprayAngle = 1f;
 
 	[Header("Wall Slide/Jump")]
 	[SerializeField] LayerMask wallSlideMask;
-	[Min(0f)]
-	[SerializeField] float wallSlideDetectionDistance = 0.25f;
-	[Range(0f, 1f)]
-	[SerializeField] float wallMaxSlopiness = 15f;
-	[SerializeField, Min(0f)] float wallSlideMaxHorizontalAngle = 40f;
-	[SerializeField, Min(0f)] float wallSlideFriction = 1f;
+	[SerializeField, Min(0)] float wallSlideDetectionDistance = 0.25f;
+	[SerializeField, Range(0, 1)] float wallMaxSlopiness = 15f;
+	[SerializeField, Min(0)] float wallSlideMaxHorizontalAngle = 40f;
+	[SerializeField, Min(0)] float wallSlideFriction = 1f;
 	[SerializeField] bool horizontalWallSlide;
-	[SerializeField, Min(0f)] float horizontalWallSlideDeceleration = 5f;
+	[SerializeField, Min(0)] float horizontalWallSlideDeceleration = 5f;
 	//TODO Probably generalize "post-wall-jump" params to "limited aerial movement" or something
-	[SerializeField, Min(0f)] float wallJumpHorizontalVelocity = 1f;
+	[SerializeField, Min(0)] float wallJumpHorizontalVelocity = 1f;
 	[SerializeField, Min(0)] float wallJumpAcceleration = 5f;
 	[SerializeField, Min(0)] float wallJumpDeceleration = 10f;
 
@@ -73,13 +62,10 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void Update() {
-		if (aimAction.WasPressedThisFrame()) {
-			// camInputAxisController.enabled = false;
+		if (aimAction.WasPressedThisFrame())
 			sprayAimCamera.gameObject.SetActive(true);
-		} else if (aimAction.WasReleasedThisFrame()) {
-			// camInputAxisController.enabled = true;
+		else if (aimAction.WasReleasedThisFrame())
 			sprayAimCamera.gameObject.SetActive(false);
-		}
 
 		if (aimAction.IsPressed()) {
 			var look = lookAction.ReadValue<Vector2>();
@@ -104,7 +90,7 @@ public class PlayerMovement : MonoBehaviour {
 		var moveInput = moveAction.ReadValue<Vector2>();
 		Vector3 hVel = GetHorizontalVelocity(velocity);
 		if (moveInput != Vector2.zero) {
-			//TODO forward + up?
+			//TODO forward + up? to avoid locking when locking straight up/down
 			Vector3 camForward = Camera.main.transform.forward;
 			camForward = GetHorizontalVelocity(camForward);
 			Vector3 moveDirection = camForward * moveInput.y + Camera.main.transform.right * moveInput.x;
@@ -210,6 +196,7 @@ public class PlayerMovement : MonoBehaviour {
 	//Could go in utility class
 	static Vector3 GetHorizontalVelocity(Vector3 velocity) => new(velocity.x, 0f, velocity.z);
 
+	//Very temporary debugging, could go in the inspector
 	void OnGUI() {
 		int y = 10;
 		AddGUILabel(ref y, $"Velocity: {velocity}");
