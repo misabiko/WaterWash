@@ -124,7 +124,6 @@ public class PlayerMovement : MonoBehaviour {
 						pushingOnWall = true;
 						Vector3 flatNormal = GetHorizontalVelocity(hit.normal).normalized;
 
-						//TODO Wall slide
 						Vector3 flatVel = Vector3.Project(velocity, -flatNormal);
 						velocity.x = flatVel.x;
 						velocity.z = flatVel.z;

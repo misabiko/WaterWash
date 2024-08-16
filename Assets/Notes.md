@@ -25,7 +25,7 @@ https://x.com/MortMort_/status/1660268036899700743
 - 0 Objects coming out of ground when cleaned
 - 0 Better 3rd person to aiming camera transition
 - 0 Water resource
-- 0 Disable water particles on boot
+- 0 Avoid capsule collider round slide off? (cylinder mesh collider?) Compare with Sunshine/Odyssey behavior
 
 ## More optional
 - 1 Splash water on wall to slide further
