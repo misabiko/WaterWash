@@ -5,6 +5,8 @@ http://www.jeremysphysicsproject.com/gravity.html
 [Splatoon - Painting Effect in Unity](https://www.youtube.com/watch?v=YUWfHX_ZNCw)
 [How it's Made: Rover Mechanic Simulator | Cleaning Minigame - How to Paint a Texture Unity Tutorial](https://www.youtube.com/watch?v=Xss4__kgYiY)
 https://x.com/MortMort_/status/1660268036899700743
+## Assets
+https://captainripley.itch.io/godot-3d-robot-character
 # TODOs
 - 2 Hover nuzzle mode
 - 2 Basic player model
@@ -25,6 +27,7 @@ https://x.com/MortMort_/status/1660268036899700743
 - 0 Objects coming out of ground when cleaned
 - 0 3rd person to aiming camera transition
 - 0 Water resource
+- 0 Fix feeling of force-based movement when turning joystick around without releasing, compare with Odyssey
 
 ## More optional
 - 1 Splash water on wall to slide further
