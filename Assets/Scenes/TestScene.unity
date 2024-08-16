@@ -6879,6 +6879,8 @@ MonoBehaviour:
   wallMaxSlopiness: 0.4
   wallSlideMaxHorizontalAngle: 40
   wallSlideFriction: 34
+  horizontalWallSlide: 0
+  horizontalWallSlideDeceleration: 1
   wallJumpHorizontalVelocity: 8
   wallJumpAcceleration: 3
   wallJumpDeceleration: 0
@@ -6992,7 +6994,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 3e3df3b0ed90e444f88e222c54b8dd5f, type: 3}
       propertyPath: m_LocalScale.x
-      value: 196.01367
+      value: 545.64325
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e3df3b0ed90e444f88e222c54b8dd5f, type: 3}
       propertyPath: m_LocalScale.y
@@ -7004,7 +7006,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e3df3b0ed90e444f88e222c54b8dd5f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10.4339
+      value: -13.9302
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e3df3b0ed90e444f88e222c54b8dd5f, type: 3}
       propertyPath: m_LocalPosition.y

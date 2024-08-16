@@ -20,15 +20,14 @@ https://x.com/MortMort_/status/1660268036899700743
 - 0 Get dirtiness percentage
 - 0 Dirtiness texture
 - 0 Spin jump
-- 0 Coyote time
+- 0 Coyote time (might be weird with capsule collider?)
 - 0 Moving platforms
 - 0 Objects coming out of ground when cleaned
-- 0 Better 3rd person to aiming camera transition
+- 0 3rd person to aiming camera transition
 - 0 Water resource
-- 0 Avoid capsule collider round slide off? (cylinder mesh collider?) Compare with Sunshine/Odyssey behavior
 
 ## More optional
 - 1 Splash water on wall to slide further
-- 0 Wall horizontal slide
 - 0 Freezing water
 - 0 Mario Galaxy ice skating movement
+- 0 Avoid capsule collider round slip off? (cylinder mesh collider?) Compare with Sunshine/Odyssey behavior

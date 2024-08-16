@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour {
 	[Min(0f)]
 	[SerializeField] float maxYSprayAngle = 1f;
 
-	//[Header("")]
+	[Header("Wall Slide/Jump")]
 	[SerializeField] LayerMask wallSlideMask;
 	[Min(0f)]
 	[SerializeField] float wallSlideDetectionDistance = 0.25f;
@@ -39,6 +39,8 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField] float wallMaxSlopiness = 15f;
 	[SerializeField, Min(0f)] float wallSlideMaxHorizontalAngle = 40f;
 	[SerializeField, Min(0f)] float wallSlideFriction = 1f;
+	[SerializeField] bool horizontalWallSlide;
+	[SerializeField, Min(0f)] float horizontalWallSlideDeceleration = 5f;
 	//TODO Probably generalize "post-wall-jump" params to "limited aerial movement" or something
 	[SerializeField, Min(0f)] float wallJumpHorizontalVelocity = 1f;
 	[SerializeField, Min(0)] float wallJumpAcceleration = 5f;
@@ -124,9 +126,12 @@ public class PlayerMovement : MonoBehaviour {
 						pushingOnWall = true;
 						Vector3 flatNormal = GetHorizontalVelocity(hit.normal).normalized;
 
-						Vector3 flatVel = Vector3.Project(velocity, -flatNormal);
-						velocity.x = flatVel.x;
-						velocity.z = flatVel.z;
+						if (!horizontalWallSlide) {
+							//limit horizontal movement along wall's normal (aka no horizontal slide)
+							Vector3 flatVel = Vector3.Project(velocity, -flatNormal);
+							velocity.x = flatVel.x;
+							velocity.z = flatVel.z;
+						}
 
 						transform.forward = flatNormal;
 					}
@@ -147,15 +152,23 @@ public class PlayerMovement : MonoBehaviour {
 				velocity.z = hVel.z;
 			}
 
+			//TODO Reenable rotation (and normal movement) a few seconds after wall jump
 			if (!aimAction.IsPressed() && !pushingOnWall && !didWallJump) {
-				//TODO Properly rotate
+				//TODO Properly rotate (once we add model and animations)
 				if (moveDirection != Vector3.zero)
 					transform.forward = moveDirection;
 			}
 		}
 
-		if (moveInput == Vector2.zero || didWallJump) {
-			float usedDeceleration = didWallJump ? wallJumpDeceleration : deceleration;
+		//Horizontal deceleration
+		if (moveInput == Vector2.zero || didWallJump || (pushingOnWall && horizontalWallSlide)) {
+			float usedDeceleration;
+			if (didWallJump)
+				usedDeceleration = wallJumpDeceleration;
+			else if (pushingOnWall)
+				usedDeceleration = horizontalWallSlideDeceleration;
+			else
+				usedDeceleration = deceleration;
 
 			//If velocity is almost zero, set it to zero
 			if (hVel.sqrMagnitude < usedDeceleration * usedDeceleration * Time.deltaTime * Time.deltaTime) {
