@@ -33,13 +33,13 @@ public class PlayerMovement : MonoBehaviour {
 
 	//[Header("")]
 	[SerializeField] LayerMask wallSlideMask;
-	//TODO Could be hardcoded
 	[Min(0f)]
 	[SerializeField] float wallSlideDetectionDistance = 0.25f;
 	[Range(0f, 1f)]
 	[SerializeField] float wallMaxSlopiness = 15f;
 	[SerializeField, Min(0f)] float wallSlideMaxHorizontalAngle = 40f;
 	[SerializeField, Min(0f)] float wallSlideFriction = 1f;
+	//TODO Probably generalize "post-wall-jump" params to "limited aerial movement" or something
 	[SerializeField, Min(0f)] float wallJumpHorizontalVelocity = 1f;
 	[SerializeField, Min(0)] float wallJumpAcceleration = 5f;
 	[SerializeField, Min(0)] float wallJumpDeceleration = 10f;
@@ -54,13 +54,11 @@ public class PlayerMovement : MonoBehaviour {
 	//Not null if the player is holding jump
 	float? jumpStartTime;
 	bool pushingOnWall;
-	//Limiting movement speed after wall jump, not a fan of this
+	//TODO Rename to "propulsed" or something? Would apply to getting shot from cannon
 	bool didWallJump;
 
-	/*Debugging*/
-	float wallSlopiness;
-	/*Debugging*/
-	float wallHorizontalAngle;
+	float wallSlopiness;	//Debugging
+	float wallHorizontalAngle;	//Debugging
 
 	void Awake() {
 		controller = GetComponent<CharacterController>();
@@ -191,8 +189,8 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		velocity.y += Physics.gravity.y * Time.deltaTime;
-		if (pushingOnWall)
-			velocity.y = Mathf.Max(0f, velocity.y);
+		if (pushingOnWall && velocity.y < 0)
+			velocity.y = Mathf.Min(0f, velocity.y + wallSlideFriction * Time.deltaTime);
 
 		controller.Move(velocity * Time.deltaTime);
 	}

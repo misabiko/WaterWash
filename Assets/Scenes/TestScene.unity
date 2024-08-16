@@ -6877,8 +6877,8 @@ MonoBehaviour:
     m_Bits: 128
   wallSlideDetectionDistance: 1
   wallMaxSlopiness: 0.4
-  wallSlideMaxHorizontalAngle: 10
-  wallSlideFriction: 1
+  wallSlideMaxHorizontalAngle: 40
+  wallSlideFriction: 34
   wallJumpHorizontalVelocity: 8
   wallJumpAcceleration: 3
   wallJumpDeceleration: 0
