@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField] CinemachineInputAxisController camInputAxisController;
 	[SerializeField] CinemachineCamera sprayAimCamera;
 	[SerializeField] Transform sprayTransform;
+	[SerializeField] Animator animator;
 
 	[Header("Parameters")]
 	[SerializeField, Min(0)] float moveSpeed = 5f;
@@ -50,6 +51,11 @@ public class PlayerMovement : MonoBehaviour {
 
 	float wallSlopiness;	//Debugging
 	float wallHorizontalAngle;	//Debugging
+
+	static readonly int AnimRunSpeed = Animator.StringToHash("RunSpeed");
+	static readonly int AnimJumping = Animator.StringToHash("Jumping");
+	static readonly int AnimGrounded = Animator.StringToHash("Grounded");
+	static readonly int AnimPushingOnWall = Animator.StringToHash("PushingOnWall");
 
 	void Awake() {
 		controller = GetComponent<CharacterController>();
@@ -120,6 +126,9 @@ public class PlayerMovement : MonoBehaviour {
 						}
 
 						transform.forward = flatNormal;
+
+						animator.Play("WallSlide");
+						animator.SetBool(AnimJumping, didWallJump);
 					}
 				}
 			}
@@ -183,7 +192,10 @@ public class PlayerMovement : MonoBehaviour {
 				velocity.x = flatVel.x;
 				velocity.z = flatVel.z;
 				didWallJump = true;
-			}
+			} else
+				animator.Play("Jump");
+
+			animator.SetBool(AnimJumping, true);
 		}
 
 		velocity.y += Physics.gravity.y * Time.deltaTime;
@@ -191,6 +203,13 @@ public class PlayerMovement : MonoBehaviour {
 			velocity.y = Mathf.Min(0f, velocity.y + wallSlideFriction * Time.deltaTime);
 
 		controller.Move(velocity * Time.deltaTime);
+
+		//TODO Split velocity into horizontal and vertical until end of Update
+		animator.SetFloat(AnimRunSpeed, GetHorizontalVelocity(velocity).magnitude / moveSpeed);
+		animator.SetBool(AnimGrounded, controller.isGrounded);
+		if (controller.isGrounded)
+			animator.SetBool(AnimJumping, false);
+		animator.SetBool(AnimPushingOnWall, pushingOnWall);
 	}
 
 	//Could go in utility class

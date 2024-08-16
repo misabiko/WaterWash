@@ -6676,6 +6676,7 @@ MonoBehaviour:
   camInputAxisController: {fileID: 698027689}
   sprayAimCamera: {fileID: 1071141308}
   sprayTransform: {fileID: 1120394590}
+  animator: {fileID: 1843926249}
   moveSpeed: 5
   jumpForce: 10
   longJumpDuration: 0.5
@@ -6769,7 +6770,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 82e1b27e315c22141a78b834e6b2265b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1843926249}
   m_SourcePrefab: {fileID: 100100000, guid: 82e1b27e315c22141a78b834e6b2265b, type: 3}
 --- !u!4 &1597417846 stripped
 Transform:
@@ -6942,6 +6946,33 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1326270418}
   m_SourcePrefab: {fileID: 100100000, guid: 3e3df3b0ed90e444f88e222c54b8dd5f, type: 3}
+--- !u!1 &1843926248 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 82e1b27e315c22141a78b834e6b2265b, type: 3}
+  m_PrefabInstance: {fileID: 1597417845}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1843926249
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843926248}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ed50a7df04d4dbe44944958dc5be683e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1984531327 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e3df3b0ed90e444f88e222c54b8dd5f, type: 3}

@@ -9,16 +9,13 @@ https://x.com/MortMort_/status/1660268036899700743
 https://captainripley.itch.io/godot-3d-robot-character
 # TODOs
 - 2 Hover nuzzle mode
-- 2 Basic player model
-- 1 Have dirt mask pixel same size regardless of mesh scale
+- 2 Have dirt mask pixel same size regardless of mesh scale
+- 2 Plunge move
 - 1 Crouch
 	- 0 Crouch backflip jump
-- 1 Jump animation
-- 1 Run animation
 - 1 Test level
-- 1 Plunge move
-	- 0 Water slide after plunge
 - 1 Make particles look like water
+- 1 Fix feeling of force-based movement when turning joystick around without releasing, compare with Odyssey
 - 0 Get dirtiness percentage
 - 0 Dirtiness texture
 - 0 Spin jump
@@ -27,7 +24,10 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 0 Objects coming out of ground when cleaned
 - 0 3rd person to aiming camera transition
 - 0 Water resource
-- 0 Fix feeling of force-based movement when turning joystick around without releasing, compare with Odyssey
+- 0 Lean to the side when turning while running
+- 0 Water sprayer model
+- 0 Water slide after plunge
+- 0 Original player model
 
 ## More optional
 - 1 Splash water on wall to slide further
