@@ -25,12 +25,18 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 0 3rd person to aiming camera transition
 - 0 Water resource
 - 0 Lean to the side when turning while running
+- 0 Debug sprayer object with primitives
 - 0 Water sprayer model
 - 0 Water slide after plunge
 - 0 Original player model
+- 0 Fix camera being controlled by mouse on boot
+- 0 Normal map to elevate dirt
+- 0 Better spray hose vibe, being able to draw on walls
+- 0 (Gold) Coins or the equivalent
+- 0 Swimming
 
 ## More optional
-- 1 Splash water on wall to slide further
+- 1 Splash water on wall to slide further (wet mask?)
 - 0 Freezing water
 - 0 Mario Galaxy ice skating movement
 - 0 Avoid capsule collider round slip off? (cylinder mesh collider?) Compare with Sunshine/Odyssey behavior
