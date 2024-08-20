@@ -10,35 +10,37 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField] Animator animator;
 
 	[Header("Parameters")]
-	[SerializeField, Min(0)] float moveSpeed = 5f;
-	[SerializeField, Min(0)] float crouchSpeed = 2f;
+	[SerializeField, Min(0)] float moveSpeed = 5;
+	[SerializeField, Min(0)] float crouchSpeed = 2;
 	//I say jumpForce, but it's really acceleration, with mass of 1
-	[SerializeField, Min(0)] float jumpForce = 5f;
+	[SerializeField, Min(0)] float jumpForce = 5;
+	[SerializeField, Min(0)] float crouchBackFlipJumpForce = 20;
+	[SerializeField, Min(0)] float crouchBackFlipHVel = 0.5f;
 	[SerializeField, Min(0)] float longJumpDuration = 0.5f;
-	[SerializeField, Min(0)] float longJumpForce = 3f;
-	[SerializeField, Min(0)] float acceleration = 5f;
-	[SerializeField, Min(0)] float deceleration = 1f;
-	[SerializeField, Min(0)] float maxAngleToStartMoving = 45f;
-	[SerializeField, Min(0)] float stoppedRotationSpeed = 700f;
-	[SerializeField, Min(0)] float movingRotationSpeed = 350f;
+	[SerializeField, Min(0)] float longJumpForce = 3;
+	[SerializeField, Min(0)] float acceleration = 5;
+	[SerializeField, Min(0)] float deceleration = 1;
+	[SerializeField, Min(0)] float maxAngleToStartMoving = 45;
+	[SerializeField, Min(0)] float stoppedRotationSpeed = 700;
+	[SerializeField, Min(0)] float movingRotationSpeed = 350;
 
-	[SerializeField, Min(0)] float aimRotateSpeed = 1f;
+	[SerializeField, Min(0)] float aimRotateSpeed = 1;
 	//Unity doesn't have a MaxAttribute...
-	[SerializeField] float minYSprayAngle = -1f;
-	[SerializeField, Min(0)] float maxYSprayAngle = 1f;
+	[SerializeField] float minYSprayAngle = -1;
+	[SerializeField, Min(0)] float maxYSprayAngle = 1;
 
 	[Header("Wall Slide/Jump")]
 	[SerializeField] LayerMask wallSlideMask;
 	[SerializeField, Min(0)] float wallSlideDetectionDistance = 0.25f;
-	[SerializeField, Range(0, 1)] float wallMaxSlopiness = 15f;
-	[SerializeField, Min(0)] float wallSlideMaxHorizontalAngle = 40f;
-	[SerializeField, Min(0)] float wallSlideFriction = 1f;
+	[SerializeField, Range(0, 1)] float wallMaxSlopiness = 15;
+	[SerializeField, Min(0)] float wallSlideMaxHorizontalAngle = 40;
+	[SerializeField, Min(0)] float wallSlideFriction = 1;
 	[SerializeField] bool horizontalWallSlide;
-	[SerializeField, Min(0)] float horizontalWallSlideDeceleration = 5f;
+	[SerializeField, Min(0)] float horizontalWallSlideDeceleration = 5;
 	//TODO Probably generalize "post-wall-jump" params to "limited aerial movement" or something
-	[SerializeField, Min(0)] float wallJumpHorizontalVelocity = 1f;
-	[SerializeField, Min(0)] float wallJumpAcceleration = 5f;
-	[SerializeField, Min(0)] float wallJumpDeceleration = 10f;
+	[SerializeField, Min(0)] float wallJumpHorizontalVelocity = 1;
+	[SerializeField, Min(0)] float wallJumpAcceleration = 5;
+	[SerializeField, Min(0)] float wallJumpDeceleration = 10;
 
 	CharacterController controller;
 	InputAction moveAction;
@@ -51,8 +53,7 @@ public class PlayerMovement : MonoBehaviour {
 	//Not null if the player is holding jump
 	float? jumpStartTime;
 	bool pushingOnWall;
-	//TODO Rename to "propulsed" or something? Would apply to getting shot from cannon
-	bool didWallJump;
+	JumpType? jumpType;
 
 	float wallSlopiness;	//Debugging
 	float wallHorizontalAngle;	//Debugging
@@ -98,7 +99,7 @@ public class PlayerMovement : MonoBehaviour {
 		if (controller.isGrounded && velocity.y < 0) {
 			velocity.y = 0f;
 			jumpStartTime = null;
-			didWallJump = false;
+			jumpType = null;
 		}
 
 		pushingOnWall = false;
@@ -142,7 +143,8 @@ public class PlayerMovement : MonoBehaviour {
 						transform.forward = flatNormal;
 
 						animator.Play("WallSlide");
-						animator.SetBool(AnimJumping, didWallJump);
+						//Not sure where I was going with that
+						animator.SetBool(AnimJumping, jumpType == JumpType.WallJump);
 					}
 				}
 			}
@@ -150,10 +152,10 @@ public class PlayerMovement : MonoBehaviour {
 			//Horizontal Movement
 			moveAngle = Vector2.Angle(GetHorizontal2D(moveDirection), GetHorizontal2D(transform.forward));
 			if ((hVel.sqrMagnitude > 0 || moveAngle < maxAngleToStartMoving) && !pushingOnWall) {
-				float maxSpeed = didWallJump
+				float maxSpeed = WasPropulsed
 					? Mathf.Infinity
 					: usedMoveSpeed * moveDirection.magnitude;
-				float usedAcceleration = didWallJump ? wallJumpAcceleration : acceleration;
+				float usedAcceleration = WasPropulsed ? wallJumpAcceleration : acceleration;
 				//TODO(2) Vector2?
 				//Very confusing vs moveDirection
 				Vector3 directionToMoveIn = hVel.sqrMagnitude > 0 ? hVel.normalized : transform.forward;
@@ -165,7 +167,7 @@ public class PlayerMovement : MonoBehaviour {
 
 			//Rotation
 			//TODO Reenable rotation (and normal movement) a few seconds after wall jump
-			if (!aimAction.IsPressed() && !pushingOnWall && !didWallJump) {
+			if (!aimAction.IsPressed() && !pushingOnWall && !WasPropulsed) {
 				float rotationSpeed = hVel.sqrMagnitude > 0 ? movingRotationSpeed : stoppedRotationSpeed;
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(moveDirection), rotationSpeed * Time.deltaTime);
 			}
@@ -173,9 +175,9 @@ public class PlayerMovement : MonoBehaviour {
 			moveAngle = null;
 
 		//Horizontal deceleration
-		if (moveInput == Vector2.zero || didWallJump || (pushingOnWall && horizontalWallSlide)) {
+		if (moveInput == Vector2.zero || WasPropulsed || (pushingOnWall && horizontalWallSlide)) {
 			float usedDeceleration;
-			if (didWallJump)
+			if (WasPropulsed)
 				usedDeceleration = wallJumpDeceleration;
 			else if (pushingOnWall)
 				usedDeceleration = horizontalWallSlideDeceleration;
@@ -193,7 +195,8 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 
-		if (jumpStartTime != null) {
+		//Jumping
+		if (jumpStartTime != null && jumpType == JumpType.Normal) {
 			if (!jumpAction.IsPressed() || Time.time - jumpStartTime > longJumpDuration)
 				jumpStartTime = null;
 			else
@@ -201,16 +204,29 @@ public class PlayerMovement : MonoBehaviour {
 		} else if (jumpAction.WasPressedThisFrame() && (controller.isGrounded || pushingOnWall)) {
 			//Setting velY to a jumpVelocity vs adding a jumpForce and adding the gravity afterward?
 			//The latter is physically correct, and would support changing the gravity, but I feel weird about the impulse being multiplied by deltaTime (either on jumpForce or gravity)
-			velocity.y = jumpForce;
 			jumpStartTime = Time.time;
 
 			if (pushingOnWall) {
+				velocity.y = jumpForce;
+				jumpType = JumpType.WallJump;
 				Vector3 flatVel = transform.forward * wallJumpHorizontalVelocity;
 				velocity.x = flatVel.x;
 				velocity.z = flatVel.z;
-				didWallJump = true;
-			} else
+				//TODO only crouch backflip if not walking, else crouch long jump
+			} else if (crouching) {
+				velocity.y = crouchBackFlipJumpForce;
+				jumpType = JumpType.CrouchBackFlip;
+				Vector3 flatVel = -transform.forward * crouchBackFlipHVel;
+				//TODO Add myVec.SetHorizontal() utility
+				velocity.x = flatVel.x;
+				velocity.z = flatVel.z;
+				//TODO Crouch back flip animation
 				animator.Play("Jump");
+			} else {
+				velocity.y = jumpForce;
+				jumpType = JumpType.Normal;
+				animator.Play("Jump");
+			}
 
 			animator.SetBool(AnimJumping, true);
 		}
@@ -230,6 +246,9 @@ public class PlayerMovement : MonoBehaviour {
 		animator.SetBool(AnimCrouching, crouching);
 	}
 
+	//Not great name, basically when not full air control, like wall jump or getting launched from cannon
+	bool WasPropulsed => jumpType is JumpType.WallJump or JumpType.CrouchBackFlip;
+
 	//Could go in utility class
 	static Vector3 GetHorizontal(Vector3 v) => new(v.x, 0f, v.z);
 	static Vector2 GetHorizontal2D(Vector3 v) => new(v.x, v.z);
@@ -240,14 +259,22 @@ public class PlayerMovement : MonoBehaviour {
 		AddGUILabel(ref y, $"Velocity: {velocity}");
 		AddGUILabel(ref y, $"HVel: {(GetHorizontal2D(velocity)).magnitude:F2} m/s");
 		AddGUILabel(ref y, $"Move Angle: {moveAngle:F1}");
+		AddGUILabel(ref y, $"Jump type: {jumpType}");
 		AddGUILabel(ref y, $"Pushing on wall: {pushingOnWall}");
 		AddGUILabel(ref y, $"Wall Slope: {wallSlopiness}");
 		AddGUILabel(ref y, $"Wall H Angle: {wallHorizontalAngle}");
-		AddGUILabel(ref y, $"Did wall jump: {didWallJump}");
 	}
 
 	static void AddGUILabel(ref int y, string text) {
 		GUI.Label(new Rect(10, y, Screen.width, 20), text);
 		y += 20;
 	}
+}
+
+enum JumpType {
+	Normal,
+	CrouchBackFlip,
+	CrouchLongJump,
+	SpinJump,
+	WallJump,
 }

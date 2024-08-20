@@ -6680,6 +6680,8 @@ MonoBehaviour:
   moveSpeed: 5
   crouchSpeed: 2
   jumpForce: 10
+  crouchBackFlipJumpForce: 20
+  crouchBackFlipHVel: 1.5
   longJumpDuration: 0.5
   longJumpForce: 20
   acceleration: 20

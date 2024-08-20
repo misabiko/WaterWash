@@ -11,7 +11,6 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 2 Hover nuzzle mode
 - 2 Have dirt mask pixel same size regardless of mesh scale
 - 2 Plunge move
-- 0 Crouch backflip jump
 - 1 Test level
 - 1 Make particles look like water
 - 1 Fix camera being controlled by mouse on boot
@@ -32,6 +31,7 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 0 Better spray hose vibe, being able to draw on walls
 - 0 (Gold) Coins or the equivalent
 - 0 Swimming
+- 0 Split PlayerMovement.Update() into smaller methods
 
 ## More optional
 - 1 Splash water on wall to slide further (wet mask?)
