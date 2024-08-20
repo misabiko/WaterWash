@@ -11,7 +11,6 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 2 Hover nuzzle mode
 - 2 Have dirt mask pixel same size regardless of mesh scale
 - 2 Plunge move
-- 2 Fix feeling of force-based movement when turning joystick around without releasing, compare with Odyssey
 - 1 Crouch
 	- 0 Crouch backflip jump
 - 1 Test level

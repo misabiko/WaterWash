@@ -144,10 +144,8 @@ public class PlayerMovement : MonoBehaviour {
 					: moveSpeed * moveDirection.magnitude;
 				float usedAcceleration = didWallJump ? wallJumpAcceleration : acceleration;
 				//TODO(2) Vector2?
-				hVel = Vector3.ClampMagnitude(
-					hVel + moveDirection.normalized * usedAcceleration * Time.deltaTime,
-					maxSpeed
-				);
+				hVel = Vector3.Project(hVel + moveDirection.normalized * (usedAcceleration * Time.deltaTime), transform.forward);
+				hVel = Vector3.ClampMagnitude(hVel, maxSpeed);
 				velocity.x = hVel.x;
 				velocity.z = hVel.z;
 			}
@@ -226,7 +224,7 @@ public class PlayerMovement : MonoBehaviour {
 		int y = 10;
 		AddGUILabel(ref y, $"Velocity: {velocity}");
 		AddGUILabel(ref y, $"HVel: {(GetHorizontal2D(velocity)).magnitude:F2} m/s");
-		AddGUILabel(ref y, $"Move Angle: {moveAngle}");
+		AddGUILabel(ref y, $"Move Angle: {moveAngle:F1}");
 		AddGUILabel(ref y, $"Pushing on wall: {pushingOnWall}");
 		AddGUILabel(ref y, $"Wall Slope: {wallSlopiness}");
 		AddGUILabel(ref y, $"Wall H Angle: {wallHorizontalAngle}");
