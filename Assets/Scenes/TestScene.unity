@@ -6678,6 +6678,7 @@ MonoBehaviour:
   sprayTransform: {fileID: 1120394590}
   animator: {fileID: 1843926249}
   moveSpeed: 5
+  crouchSpeed: 2
   jumpForce: 10
   longJumpDuration: 0.5
   longJumpForce: 20

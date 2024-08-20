@@ -11,8 +11,7 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 2 Hover nuzzle mode
 - 2 Have dirt mask pixel same size regardless of mesh scale
 - 2 Plunge move
-- 1 Crouch
-	- 0 Crouch backflip jump
+- 0 Crouch backflip jump
 - 1 Test level
 - 1 Make particles look like water
 - 1 Fix camera being controlled by mouse on boot

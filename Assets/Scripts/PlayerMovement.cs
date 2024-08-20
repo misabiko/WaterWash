@@ -1,5 +1,4 @@
 using Unity.Cinemachine;
-using Unity.Mathematics.Geometry;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +11,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	[Header("Parameters")]
 	[SerializeField, Min(0)] float moveSpeed = 5f;
+	[SerializeField, Min(0)] float crouchSpeed = 2f;
 	//I say jumpForce, but it's really acceleration, with mass of 1
 	[SerializeField, Min(0)] float jumpForce = 5f;
 	[SerializeField, Min(0)] float longJumpDuration = 0.5f;
@@ -44,6 +44,7 @@ public class PlayerMovement : MonoBehaviour {
 	InputAction moveAction;
 	InputAction lookAction;
 	InputAction jumpAction;
+	InputAction crouchAction;
 	InputAction aimAction;
 
 	Vector3 velocity;
@@ -61,6 +62,7 @@ public class PlayerMovement : MonoBehaviour {
 	static readonly int AnimJumping = Animator.StringToHash("Jumping");
 	static readonly int AnimGrounded = Animator.StringToHash("Grounded");
 	static readonly int AnimPushingOnWall = Animator.StringToHash("PushingOnWall");
+	static readonly int AnimCrouching = Animator.StringToHash("Crouching");
 
 	void Awake() {
 		controller = GetComponent<CharacterController>();
@@ -69,24 +71,27 @@ public class PlayerMovement : MonoBehaviour {
 		moveAction = playerInput.actions["Move"];
 		lookAction = playerInput.actions["Look"];
 		jumpAction = playerInput.actions["Jump"];
+		crouchAction = playerInput.actions["Crouch"];
 		aimAction = playerInput.actions["Aim"];
 	}
 
 	void Update() {
-		if (aimAction.WasPressedThisFrame())
-			sprayAimCamera.gameObject.SetActive(true);
-		else if (aimAction.WasReleasedThisFrame())
-			sprayAimCamera.gameObject.SetActive(false);
+		{
+			if (aimAction.WasPressedThisFrame())
+				sprayAimCamera.gameObject.SetActive(true);
+			else if (aimAction.WasReleasedThisFrame())
+				sprayAimCamera.gameObject.SetActive(false);
 
-		if (aimAction.IsPressed()) {
-			var look = lookAction.ReadValue<Vector2>();
-			transform.Rotate(Vector3.up, look.x * aimRotateSpeed * Time.deltaTime);
-			sprayTransform.Rotate(Vector3.right, -look.y * aimRotateSpeed * Time.deltaTime);
+			if (aimAction.IsPressed()) {
+				var look = lookAction.ReadValue<Vector2>();
+				transform.Rotate(Vector3.up, look.x * aimRotateSpeed * Time.deltaTime);
+				sprayTransform.Rotate(Vector3.right, -look.y * aimRotateSpeed * Time.deltaTime);
 
-			if (sprayTransform.localEulerAngles.x >= 180f)
-				sprayTransform.localEulerAngles = new Vector3(Mathf.Max(sprayTransform.localEulerAngles.x, 360f + minYSprayAngle), 0, 0);
-			else
-				sprayTransform.localEulerAngles = new Vector3(Mathf.Min(sprayTransform.localEulerAngles.x, maxYSprayAngle), 0, 0);
+				if (sprayTransform.localEulerAngles.x >= 180f)
+					sprayTransform.localEulerAngles = new Vector3(Mathf.Max(sprayTransform.localEulerAngles.x, 360f + minYSprayAngle), 0, 0);
+				else
+					sprayTransform.localEulerAngles = new Vector3(Mathf.Min(sprayTransform.localEulerAngles.x, maxYSprayAngle), 0, 0);
+			}
 		}
 
 		//Could move this with the rest of velocity.y stuff?
@@ -97,12 +102,16 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		pushingOnWall = false;
+		bool crouching = controller.isGrounded && crouchAction.IsPressed();
+		
+		//TODO Rename moveSpeed to runSpeed or something
+		float usedMoveSpeed = crouching ? crouchSpeed : moveSpeed;
 
 		var moveInput = moveAction.ReadValue<Vector2>();
 		Vector3 hVel = GetHorizontal(velocity);
 		if (moveInput != Vector2.zero) {
 			//TODO forward + up? to avoid locking when locking straight up/down
-			Vector3 camForward = Camera.main.transform.forward;
+			Vector3 camForward = Camera.main!.transform.forward;
 			camForward = GetHorizontal(camForward);
 			Vector3 moveDirection = camForward * moveInput.y + Camera.main.transform.right * moveInput.x;
 			if (moveDirection.sqrMagnitude > 1)
@@ -143,7 +152,7 @@ public class PlayerMovement : MonoBehaviour {
 			if ((hVel.sqrMagnitude > 0 || moveAngle < maxAngleToStartMoving) && !pushingOnWall) {
 				float maxSpeed = didWallJump
 					? Mathf.Infinity
-					: moveSpeed * moveDirection.magnitude;
+					: usedMoveSpeed * moveDirection.magnitude;
 				float usedAcceleration = didWallJump ? wallJumpAcceleration : acceleration;
 				//TODO(2) Vector2?
 				//Very confusing vs moveDirection
@@ -178,7 +187,7 @@ public class PlayerMovement : MonoBehaviour {
 				velocity.x = 0f;
 				velocity.z = 0f;
 			} else {
-				hVel -= hVel.normalized * usedDeceleration * Time.deltaTime;
+				hVel -= hVel.normalized * (usedDeceleration * Time.deltaTime);
 				velocity.x = hVel.x;
 				velocity.z = hVel.z;
 			}
@@ -213,11 +222,12 @@ public class PlayerMovement : MonoBehaviour {
 		controller.Move(velocity * Time.deltaTime);
 
 		//TODO Split velocity into horizontal and vertical until end of Update
-		animator.SetFloat(AnimRunSpeed, GetHorizontal(velocity).magnitude / moveSpeed);
+		animator.SetFloat(AnimRunSpeed, GetHorizontal(velocity).magnitude / usedMoveSpeed);
 		animator.SetBool(AnimGrounded, controller.isGrounded);
 		if (controller.isGrounded)
 			animator.SetBool(AnimJumping, false);
 		animator.SetBool(AnimPushingOnWall, pushingOnWall);
+		animator.SetBool(AnimCrouching, crouching);
 	}
 
 	//Could go in utility class
