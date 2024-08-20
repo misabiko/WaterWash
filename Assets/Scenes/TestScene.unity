@@ -6683,6 +6683,8 @@ MonoBehaviour:
   longJumpForce: 20
   acceleration: 20
   deceleration: 20
+  minAngleToMove: 45
+  rotationSpeed: 700
   aimRotateSpeed: 100
   minYSprayAngle: -40
   maxYSprayAngle: 30

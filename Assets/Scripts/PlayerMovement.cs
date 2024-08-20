@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField, Min(0)] float longJumpForce = 3f;
 	[SerializeField, Min(0)] float acceleration = 5f;
 	[SerializeField, Min(0)] float deceleration = 1f;
+	[SerializeField, Min(0)] float minAngleToMove = 45f;
+	[SerializeField, Min(0)] float rotationSpeed = 700f;
 
 	[SerializeField, Min(0)] float aimRotateSpeed = 1f;
 	//Unity doesn't have a MaxAttribute...
@@ -51,6 +53,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	float wallSlopiness;	//Debugging
 	float wallHorizontalAngle;	//Debugging
+	float? moveAngle;	//Debugging
 
 	static readonly int AnimRunSpeed = Animator.StringToHash("RunSpeed");
 	static readonly int AnimJumping = Animator.StringToHash("Jumping");
@@ -94,11 +97,11 @@ public class PlayerMovement : MonoBehaviour {
 		pushingOnWall = false;
 
 		var moveInput = moveAction.ReadValue<Vector2>();
-		Vector3 hVel = GetHorizontalVelocity(velocity);
+		Vector3 hVel = GetHorizontal(velocity);
 		if (moveInput != Vector2.zero) {
 			//TODO forward + up? to avoid locking when locking straight up/down
 			Vector3 camForward = Camera.main.transform.forward;
-			camForward = GetHorizontalVelocity(camForward);
+			camForward = GetHorizontal(camForward);
 			Vector3 moveDirection = camForward * moveInput.y + Camera.main.transform.right * moveInput.x;
 			if (moveDirection.sqrMagnitude > 1)
 				moveDirection.Normalize();
@@ -112,11 +115,11 @@ public class PlayerMovement : MonoBehaviour {
 				if (Physics.Raycast(transform.position, rayDir, out RaycastHit hit, rayDistance, wallSlideMask)) {
 					//sloppy way to get the pitch angle of the wall, like its wall to slope ratio, as opposed to the angle of how much the player is pointing toward the wall
 					wallSlopiness = Mathf.Abs(hit.normal.y);
-					wallHorizontalAngle = Vector2.Angle(-(new Vector2(hit.normal.x, hit.normal.z)), new Vector2(rayDir.x, rayDir.z));
+					wallHorizontalAngle = Vector2.Angle(-(GetHorizontal2D(hit.normal)), GetHorizontal2D(rayDir));
 
 					if (wallSlopiness <= wallMaxSlopiness && wallHorizontalAngle <= wallSlideMaxHorizontalAngle) {
 						pushingOnWall = true;
-						Vector3 flatNormal = GetHorizontalVelocity(hit.normal).normalized;
+						Vector3 flatNormal = GetHorizontal(hit.normal).normalized;
 
 						if (!horizontalWallSlide) {
 							//limit horizontal movement along wall's normal (aka no horizontal slide)
@@ -133,12 +136,14 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			}
 
-			if (!pushingOnWall) {
+			//Horizontal Movement
+			moveAngle = Vector2.Angle(GetHorizontal2D(moveDirection), GetHorizontal2D(transform.forward));
+			if (moveAngle < minAngleToMove && !pushingOnWall) {
 				float maxSpeed = didWallJump
 					? Mathf.Infinity
 					: moveSpeed * moveDirection.magnitude;
 				float usedAcceleration = didWallJump ? wallJumpAcceleration : acceleration;
-				//TODO(1) Vector2?
+				//TODO(2) Vector2?
 				hVel = Vector3.ClampMagnitude(
 					hVel + moveDirection.normalized * usedAcceleration * Time.deltaTime,
 					maxSpeed
@@ -147,13 +152,13 @@ public class PlayerMovement : MonoBehaviour {
 				velocity.z = hVel.z;
 			}
 
+			//Rotation
 			//TODO Reenable rotation (and normal movement) a few seconds after wall jump
 			if (!aimAction.IsPressed() && !pushingOnWall && !didWallJump) {
-				//TODO Properly rotate (once we add model and animations)
-				if (moveDirection != Vector3.zero)
-					transform.forward = moveDirection;
+				transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(moveDirection), rotationSpeed * Time.deltaTime);
 			}
-		}
+		} else
+			moveAngle = null;
 
 		//Horizontal deceleration
 		if (moveInput == Vector2.zero || didWallJump || (pushingOnWall && horizontalWallSlide)) {
@@ -205,7 +210,7 @@ public class PlayerMovement : MonoBehaviour {
 		controller.Move(velocity * Time.deltaTime);
 
 		//TODO Split velocity into horizontal and vertical until end of Update
-		animator.SetFloat(AnimRunSpeed, GetHorizontalVelocity(velocity).magnitude / moveSpeed);
+		animator.SetFloat(AnimRunSpeed, GetHorizontal(velocity).magnitude / moveSpeed);
 		animator.SetBool(AnimGrounded, controller.isGrounded);
 		if (controller.isGrounded)
 			animator.SetBool(AnimJumping, false);
@@ -213,13 +218,15 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	//Could go in utility class
-	static Vector3 GetHorizontalVelocity(Vector3 velocity) => new(velocity.x, 0f, velocity.z);
+	static Vector3 GetHorizontal(Vector3 v) => new(v.x, 0f, v.z);
+	static Vector2 GetHorizontal2D(Vector3 v) => new(v.x, v.z);
 
 	//Very temporary debugging, could go in the inspector
 	void OnGUI() {
 		int y = 10;
 		AddGUILabel(ref y, $"Velocity: {velocity}");
-		AddGUILabel(ref y, $"HVel: {(new Vector2(velocity.x, velocity.z)).magnitude:F2} m/s");
+		AddGUILabel(ref y, $"HVel: {(GetHorizontal2D(velocity)).magnitude:F2} m/s");
+		AddGUILabel(ref y, $"Move Angle: {moveAngle}");
 		AddGUILabel(ref y, $"Pushing on wall: {pushingOnWall}");
 		AddGUILabel(ref y, $"Wall Slope: {wallSlopiness}");
 		AddGUILabel(ref y, $"Wall H Angle: {wallHorizontalAngle}");
