@@ -39,3 +39,4 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 0 Freezing water
 - 0 Mario Galaxy ice skating movement
 - 0 Avoid capsule collider round slip off? (cylinder mesh collider?) Compare with Sunshine/Odyssey behavior
+- 0 Keyboard/Mouse camera controls?
