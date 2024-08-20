@@ -1,4 +1,5 @@
 using Unity.Cinemachine;
+using Unity.Mathematics.Geometry;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,8 +18,9 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField, Min(0)] float longJumpForce = 3f;
 	[SerializeField, Min(0)] float acceleration = 5f;
 	[SerializeField, Min(0)] float deceleration = 1f;
-	[SerializeField, Min(0)] float minAngleToMove = 45f;
-	[SerializeField, Min(0)] float rotationSpeed = 700f;
+	[SerializeField, Min(0)] float maxAngleToStartMoving = 45f;
+	[SerializeField, Min(0)] float stoppedRotationSpeed = 700f;
+	[SerializeField, Min(0)] float movingRotationSpeed = 350f;
 
 	[SerializeField, Min(0)] float aimRotateSpeed = 1f;
 	//Unity doesn't have a MaxAttribute...
@@ -138,13 +140,15 @@ public class PlayerMovement : MonoBehaviour {
 
 			//Horizontal Movement
 			moveAngle = Vector2.Angle(GetHorizontal2D(moveDirection), GetHorizontal2D(transform.forward));
-			if (moveAngle < minAngleToMove && !pushingOnWall) {
+			if ((hVel.sqrMagnitude > 0 || moveAngle < maxAngleToStartMoving) && !pushingOnWall) {
 				float maxSpeed = didWallJump
 					? Mathf.Infinity
 					: moveSpeed * moveDirection.magnitude;
 				float usedAcceleration = didWallJump ? wallJumpAcceleration : acceleration;
 				//TODO(2) Vector2?
-				hVel = Vector3.Project(hVel + moveDirection.normalized * (usedAcceleration * Time.deltaTime), transform.forward);
+				//Very confusing vs moveDirection
+				Vector3 directionToMoveIn = hVel.sqrMagnitude > 0 ? hVel.normalized : transform.forward;
+				hVel = Vector3.Project(hVel + directionToMoveIn * (moveDirection.magnitude * usedAcceleration * Time.deltaTime), transform.forward);
 				hVel = Vector3.ClampMagnitude(hVel, maxSpeed);
 				velocity.x = hVel.x;
 				velocity.z = hVel.z;
@@ -153,6 +157,7 @@ public class PlayerMovement : MonoBehaviour {
 			//Rotation
 			//TODO Reenable rotation (and normal movement) a few seconds after wall jump
 			if (!aimAction.IsPressed() && !pushingOnWall && !didWallJump) {
+				float rotationSpeed = hVel.sqrMagnitude > 0 ? movingRotationSpeed : stoppedRotationSpeed;
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(moveDirection), rotationSpeed * Time.deltaTime);
 			}
 		} else
