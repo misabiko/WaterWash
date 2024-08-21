@@ -20,7 +20,6 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 0 Spin jump
 - 0 Coyote time (might be weird with capsule collider?)
 - 0 Moving platforms
-- 0 Visual feedback (growing cube for now) of water level
 - 0 Animation lean to the side when turning while running
 - 0 Debug sprayer object with primitives
 - 0 (Gold) Coins or the equivalent

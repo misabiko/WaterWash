@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 namespace WaterWash {
 	public class Sprayer : MonoBehaviour {
 		[SerializeField] WaterParticles waterParticles;
+		[SerializeField] Transform waterPack;
 		[SerializeField, Min(0)] float consumptionRate = 1;
 		[SerializeField, Min(0)] float rechargeRate = 1;
 		[SerializeField, Min(0)] int maxWaterLevel = 100;
@@ -15,9 +16,14 @@ namespace WaterWash {
 		float waterLevel;
 		bool isSpraying;
 
+		float waterPackBaseHeight;
+		float waterPackBaseY;
+
 		void Awake() {
 			sprayAction = GetComponent<PlayerInput>().actions["Spray"];
 			waterLevel = maxWaterLevel;
+			waterPackBaseHeight = waterPack.localScale.y;
+			waterPackBaseY = waterPack.localPosition.y;
 		}
 
 		void Update() {
@@ -30,6 +36,16 @@ namespace WaterWash {
 				waterLevel = Mathf.Max(0, waterLevel - sprayInput * consumptionRate * Time.deltaTime);
 				isSpraying = sprayInput > 0 && waterLevel > 0;
 			}
+		}
+
+		void LateUpdate() {
+			Vector3 scale = waterPack.localScale;
+			scale.y = waterPackBaseHeight * waterLevel / maxWaterLevel;
+			waterPack.localScale = scale;
+
+			Vector3 position = waterPack.localPosition;
+			position.y = waterPackBaseY - (waterPackBaseHeight - scale.y) / 2;
+			waterPack.localPosition = position;
 		}
 
 		//Very temporary debugging, could go in the inspector
