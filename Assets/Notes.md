@@ -4,7 +4,8 @@ http://www.jeremysphysicsproject.com/gravity.html
 [Recreating Splatoon's Ink System | Mix and Jam](https://www.youtube.com/watch?v=FR618z5xEiM)
 [Splatoon - Painting Effect in Unity](https://www.youtube.com/watch?v=YUWfHX_ZNCw)
 [How it's Made: Rover Mechanic Simulator | Cleaning Minigame - How to Paint a Texture Unity Tutorial](https://www.youtube.com/watch?v=Xss4__kgYiY)
-https://x.com/MortMort_/status/1660268036899700743
+https://x.com/MortMort_/status/1660268036899700743  
+[Deconstructing the water effect in Super Mario Sunshine](https://blog.mecheye.net/2018/03/deconstructing-the-water-effect-in-super-mario-sunshine/)
 ## Assets
 https://captainripley.itch.io/godot-3d-robot-character
 # TODOs
@@ -31,6 +32,8 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 0 Original player model
 - 0 Split PlayerMovement.Update() into smaller methods
 - 0 Add namespace
+- 0 Death plane
+- 0 Respawn on death
 
 ## More optional
 - 1 Splash water on wall to slide further (wet mask?)

@@ -45,8 +45,10 @@ public class WaterParticles : MonoBehaviour {
 						(int)(textureCoord.x * paintable.DirtMaskTexture.width),
 						(int)(textureCoord.y * paintable.DirtMaskTexture.height)
 					);
-					for (int x = -brushSize; x <= brushSize; ++x) {
-						for (int y = -brushSize; y <= brushSize; ++y) {
+					//Would be nice if we could use particle size for brush size
+					int currentBrushSize = Random.Range(brushSize / 2, brushSize);
+					for (int x = -currentBrushSize; x <= currentBrushSize; ++x) {
+						for (int y = -currentBrushSize; y <= currentBrushSize; ++y) {
 							var pixelPos = new Vector2Int(
 								Mathf.Clamp(centerPixel.x + x, 0, paintable.DirtMaskTexture.width),
 								Mathf.Clamp(centerPixel.y + y, 0, paintable.DirtMaskTexture.height)
@@ -54,12 +56,12 @@ public class WaterParticles : MonoBehaviour {
 
 
 							//TODO Smooth brush
-							// float alpha = 1f - Vector2.Distance(centerPixel, pixelPos) / brushSize;
+							// float alpha = 1f - Vector2.Distance(centerPixel, pixelPos) / currentBrushSize;
 							// //TODO Use GetPixels instead of GetPixel every time
 							// Color pixelColor = paintable.DirtMaskTexture.GetPixel(pixelPos.x, pixelPos.y);
 							// pixelColor.a = Mathf.Clamp01(pixelColor.a + (draw ? alpha : -alpha));
 
-							if (Vector2.Distance(pixelPos, centerPixel) > brushSize)
+							if (Vector2.Distance(pixelPos, centerPixel) > currentBrushSize)
 								continue;
 
 							paintable.DirtMaskTexture.SetPixel(pixelPos.x, pixelPos.y, draw ? Color.black : Color.clear);
