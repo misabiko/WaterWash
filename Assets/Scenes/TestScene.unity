@@ -6684,6 +6684,8 @@ MonoBehaviour:
   crouchBackFlipHVel: 1.5
   crouchLongJumpForce: 12
   crouchLongJumpHVel: 10
+  plungeYForce: 12
+  plungeHVel: 13
   longJumpDuration: 0.5
   longJumpForce: 20
   acceleration: 20

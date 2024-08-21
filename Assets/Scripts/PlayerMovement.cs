@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField, Min(0)] float crouchBackFlipHVel = 0.5f;
 	[SerializeField, Min(0)] float crouchLongJumpForce = 12;
 	[SerializeField, Min(0)] float crouchLongJumpHVel = 6;
+	[SerializeField, Min(0)] float plungeYForce = 12;
+	[SerializeField, Min(0)] float plungeHVel = 10;
 	[SerializeField, Min(0)] float longJumpDuration = 0.5f;
 	[SerializeField, Min(0)] float longJumpForce = 3;
 	[SerializeField, Min(0)] float acceleration = 5;
@@ -49,6 +51,7 @@ public class PlayerMovement : MonoBehaviour {
 	InputAction lookAction;
 	InputAction jumpAction;
 	InputAction crouchAction;
+	InputAction plungeAction;
 	InputAction aimAction;
 
 	Vector3 velocity;
@@ -75,6 +78,7 @@ public class PlayerMovement : MonoBehaviour {
 		lookAction = playerInput.actions["Look"];
 		jumpAction = playerInput.actions["Jump"];
 		crouchAction = playerInput.actions["Crouch"];
+		plungeAction = playerInput.actions["Plunge"];
 		aimAction = playerInput.actions["Aim"];
 	}
 
@@ -85,6 +89,7 @@ public class PlayerMovement : MonoBehaviour {
 			else if (aimAction.WasReleasedThisFrame())
 				sprayAimCamera.gameObject.SetActive(false);
 
+			//TODO Fix aim movement
 			if (aimAction.IsPressed()) {
 				var look = lookAction.ReadValue<Vector2>();
 				transform.Rotate(Vector3.up, look.x * aimRotateSpeed * Time.deltaTime);
@@ -191,7 +196,14 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		//Jumping
-		if (jumpStartTime != null && jumpType == JumpType.Normal) {
+		if (plungeAction.WasPressedThisFrame() && jumpType != JumpType.Plunge/* && (controller.isGrounded || pushingOnWall)*/) {
+			velocity.y = plungeYForce;
+			jumpType = JumpType.Plunge;
+			velocity.SetHorizontal(transform.forward * plungeHVel);
+			animator.Play("Plunge");
+			animator.SetBool(AnimJumping, true);
+			jumpStartTime = null;
+		} else if (jumpStartTime != null && jumpType == JumpType.Normal) {
 			if (!jumpAction.IsPressed() || Time.time - jumpStartTime > longJumpDuration)
 				jumpStartTime = null;
 			else
@@ -242,7 +254,11 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	//Not great name, basically when not full air control, like wall jump or getting launched from cannon
-	bool WasPropulsed => jumpType is JumpType.WallJump or JumpType.CrouchBackFlip or JumpType.CrouchLongJump;
+	bool WasPropulsed => jumpType
+		is JumpType.WallJump
+		or JumpType.CrouchBackFlip
+		or JumpType.CrouchLongJump
+		or JumpType.Plunge;
 
 	//Very temporary debugging, could go in the inspector
 	void OnGUI() {

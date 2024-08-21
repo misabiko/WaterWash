@@ -10,7 +10,6 @@ https://captainripley.itch.io/godot-3d-robot-character
 # TODOs
 - 2 Hover nuzzle mode
 - 2 Have dirt mask pixel same size regardless of mesh scale
-- 2 Plunge move
 - 2 Test level
 - 1 Make particles look like water
 - 1 Fix camera being controlled by mouse on boot
