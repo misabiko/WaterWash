@@ -112,7 +112,7 @@ public class PlayerMovement : MonoBehaviour {
 		var moveInput = moveAction.ReadValue<Vector2>();
 		Vector3 hVel = Utility.GetHorizontal(velocity);
 		if (moveInput != Vector2.zero) {
-			//TODO forward + up? to avoid locking when locking straight up/down
+			//Could add cam.up to avoid locking when looking straight up/down
 			Vector3 camForward = Camera.main!.transform.forward;
 			camForward = Utility.GetHorizontal(camForward);
 			Vector3 moveDirection = camForward * moveInput.y + Camera.main.transform.right * moveInput.x;
@@ -155,7 +155,7 @@ public class PlayerMovement : MonoBehaviour {
 					? Mathf.Infinity
 					: usedMoveSpeed * moveDirection.magnitude;
 				float usedAcceleration = WasPropulsed ? propulsedAcceleration : acceleration;
-				//TODO(2) Vector2?
+
 				hVel = Vector3.Project(hVel + transform.forward * (moveDirection.magnitude * usedAcceleration * Time.deltaTime), transform.forward);
 				hVel = Vector3.ClampMagnitude(hVel, maxSpeed);
 				velocity.SetHorizontal(hVel);
