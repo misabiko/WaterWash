@@ -19,4 +19,9 @@ public static class Utility {
 		v.x = value;
 		v.z = value;
 	}
+
+	public static void AddGUILabel(ref int y, string text) {
+		GUI.Label(new Rect(10, y, Screen.width, 20), text);
+		y += 20;
+	}
 }

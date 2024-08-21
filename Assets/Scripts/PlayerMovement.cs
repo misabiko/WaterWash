@@ -263,18 +263,13 @@ public class PlayerMovement : MonoBehaviour {
 	//Very temporary debugging, could go in the inspector
 	void OnGUI() {
 		int y = 10;
-		AddGUILabel(ref y, $"Velocity: {velocity}");
-		AddGUILabel(ref y, $"HVel: {(Utility.GetHorizontal2D(velocity)).magnitude:F2} m/s");
-		AddGUILabel(ref y, $"Move Angle: {moveAngle:F1}");
-		AddGUILabel(ref y, $"Jump type: {jumpType}");
-		AddGUILabel(ref y, $"Pushing on wall: {pushingOnWall}");
-		AddGUILabel(ref y, $"Wall Slope: {wallSlopiness}");
-		AddGUILabel(ref y, $"Wall H Angle: {wallHorizontalAngle}");
-	}
-
-	static void AddGUILabel(ref int y, string text) {
-		GUI.Label(new Rect(10, y, Screen.width, 20), text);
-		y += 20;
+		Utility.AddGUILabel(ref y, $"Velocity: {velocity}");
+		Utility.AddGUILabel(ref y, $"HVel: {(Utility.GetHorizontal2D(velocity)).magnitude:F2} m/s");
+		Utility.AddGUILabel(ref y, $"Move Angle: {moveAngle:F1}");
+		Utility.AddGUILabel(ref y, $"Jump type: {jumpType}");
+		Utility.AddGUILabel(ref y, $"Pushing on wall: {pushingOnWall}");
+		Utility.AddGUILabel(ref y, $"Wall Slope: {wallSlopiness}");
+		Utility.AddGUILabel(ref y, $"Wall H Angle: {wallHorizontalAngle}");
 	}
 
 	void DrawArrow(Vector3 direction, Color color) {

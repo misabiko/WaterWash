@@ -11,14 +11,12 @@ https://captainripley.itch.io/godot-3d-robot-character
 # TODOs
 - 2 Hover nuzzle mode
 - 2 Example platforming level
-- 1 Make particles look like water
-- 1 Sliding crouch
-- 1 Water resource
+- 2 Sliding crouch
+- 2 Make particles look like water
+- 2 Water slide after plunge
+- 2 Normal map to elevate dirt
 - 1 Get dirtiness percentage
 - 1 3rd person to aiming camera transition
-- 1 Water slide after plunge
-- 1 Better spray hose vibe, being able to draw on walls
-- 1 Normal map to elevate dirt
 - 0 Dirtiness texture
 - 0 Spin jump
 - 0 Coyote time (might be weird with capsule collider?)
@@ -28,12 +26,13 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 0 Debug sprayer object with primitives
 - 0 (Gold) Coins or the equivalent
 - 0 Swimming
+- 0 Death plane
+- 0 Respawn on death
+- 0 Vibrate controller on spray
 - 0 Water sprayer model
 - 0 Original player model
 - 0 Split PlayerMovement.Update() into smaller methods
 - 0 Add namespace
-- 0 Death plane
-- 0 Respawn on death
 
 ## More optional
 - 1 Splash water on wall to slide further (wet mask?)
