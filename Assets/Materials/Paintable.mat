@@ -66,6 +66,7 @@ Material:
     - _DirtScale: 3260.41
     - _QueueControl: 0
     - _QueueOffset: 0
-    m_Colors: []
+    m_Colors:
+    - _MoveSpeed: {r: 0.0005, g: 0.0002, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
