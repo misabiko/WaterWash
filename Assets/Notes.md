@@ -32,6 +32,7 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 0 (Gold) Coins or the equivalent
 - 0 Swimming
 - 0 Split PlayerMovement.Update() into smaller methods
+- 0 Add namespace
 
 ## More optional
 - 1 Splash water on wall to slide further (wet mask?)

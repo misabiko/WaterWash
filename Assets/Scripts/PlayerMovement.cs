@@ -106,16 +106,16 @@ public class PlayerMovement : MonoBehaviour {
 
 		pushingOnWall = false;
 		bool crouching = controller.isGrounded && crouchAction.IsPressed();
-		
+
 		//TODO Rename moveSpeed to runSpeed or something
 		float usedMoveSpeed = crouching ? crouchSpeed : moveSpeed;
 
 		var moveInput = moveAction.ReadValue<Vector2>();
-		Vector3 hVel = GetHorizontal(velocity);
+		Vector3 hVel = Utility.GetHorizontal(velocity);
 		if (moveInput != Vector2.zero) {
 			//TODO forward + up? to avoid locking when locking straight up/down
 			Vector3 camForward = Camera.main!.transform.forward;
-			camForward = GetHorizontal(camForward);
+			camForward = Utility.GetHorizontal(camForward);
 			Vector3 moveDirection = camForward * moveInput.y + Camera.main.transform.right * moveInput.x;
 			if (moveDirection.sqrMagnitude > 1)
 				moveDirection.Normalize();
@@ -130,17 +130,15 @@ public class PlayerMovement : MonoBehaviour {
 				if (Physics.Raycast(transform.position, rayDir, out RaycastHit hit, rayDistance, wallSlideMask)) {
 					//sloppy way to get the pitch angle of the wall, like its wall to slope ratio, as opposed to the angle of how much the player is pointing toward the wall
 					wallSlopiness = Mathf.Abs(hit.normal.y);
-					wallHorizontalAngle = Vector2.Angle(-(GetHorizontal2D(hit.normal)), GetHorizontal2D(rayDir));
+					wallHorizontalAngle = Vector2.Angle(-(Utility.GetHorizontal2D(hit.normal)), Utility.GetHorizontal2D(rayDir));
 
 					if (wallSlopiness <= wallMaxSlopiness && wallHorizontalAngle <= wallSlideMaxHorizontalAngle) {
 						pushingOnWall = true;
-						Vector3 flatNormal = GetHorizontal(hit.normal).normalized;
+						Vector3 flatNormal = Utility.GetHorizontal(hit.normal).normalized;
 
 						if (!horizontalWallSlide) {
 							//limit horizontal movement along wall's normal (aka no horizontal slide)
-							Vector3 flatVel = Vector3.Project(velocity, -flatNormal);
-							velocity.x = flatVel.x;
-							velocity.z = flatVel.z;
+							velocity.SetHorizontal(Vector3.Project(velocity, -flatNormal));
 						}
 
 						transform.forward = flatNormal;
@@ -153,7 +151,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 
 			//Horizontal Movement
-			moveAngle = Vector2.Angle(GetHorizontal2D(moveDirection), GetHorizontal2D(transform.forward));
+			moveAngle = Vector2.Angle(Utility.GetHorizontal2D(moveDirection), Utility.GetHorizontal2D(transform.forward));
 			if ((hVel.sqrMagnitude > 0 || moveAngle < maxAngleToStartMoving) && !pushingOnWall) {
 				float maxSpeed = WasPropulsed
 					? Mathf.Infinity
@@ -164,8 +162,7 @@ public class PlayerMovement : MonoBehaviour {
 				Vector3 directionToMoveIn = hVel.sqrMagnitude > 0 ? hVel.normalized : transform.forward;
 				hVel = Vector3.Project(hVel + directionToMoveIn * (moveDirection.magnitude * usedAcceleration * Time.deltaTime), transform.forward);
 				hVel = Vector3.ClampMagnitude(hVel, maxSpeed);
-				velocity.x = hVel.x;
-				velocity.z = hVel.z;
+				velocity.SetHorizontal(hVel);
 			}
 
 			//Rotation
@@ -189,12 +186,10 @@ public class PlayerMovement : MonoBehaviour {
 
 			//If velocity is almost zero, set it to zero
 			if (hVel.sqrMagnitude < usedDeceleration * usedDeceleration * Time.deltaTime * Time.deltaTime) {
-				velocity.x = 0f;
-				velocity.z = 0f;
+				velocity.SetHorizontal(0);
 			} else {
 				hVel -= hVel.normalized * (usedDeceleration * Time.deltaTime);
-				velocity.x = hVel.x;
-				velocity.z = hVel.z;
+				velocity.SetHorizontal(hVel);
 			}
 		}
 
@@ -212,24 +207,17 @@ public class PlayerMovement : MonoBehaviour {
 			if (pushingOnWall) {
 				velocity.y = jumpForce;
 				jumpType = JumpType.WallJump;
-				Vector3 flatVel = transform.forward * wallJumpHorizontalVelocity;
-				velocity.x = flatVel.x;
-				velocity.z = flatVel.z;
+				velocity.SetHorizontal(transform.forward * wallJumpHorizontalVelocity);
 			} else if (crouching) {
 				if (hVel == Vector3.zero) {
 					velocity.y = crouchBackFlipJumpForce;
 					jumpType = JumpType.CrouchBackFlip;
-					Vector3 flatVel = -transform.forward * crouchBackFlipHVel;
-					//TODO Add myVec.SetHorizontal() utility
-					velocity.x = flatVel.x;
-					velocity.z = flatVel.z;
+					velocity.SetHorizontal(-transform.forward * crouchBackFlipHVel);
 					animator.Play("CrouchBackFlip");
 				} else {
 					velocity.y = crouchLongJumpForce;
 					jumpType = JumpType.CrouchLongJump;
-					Vector3 flatVel = transform.forward * crouchLongJumpHVel;
-					velocity.x = flatVel.x;
-					velocity.z = flatVel.z;
+					velocity.SetHorizontal(transform.forward * crouchLongJumpHVel);
 					animator.Play("CrouchLongJump");
 				}
 			} else {
@@ -248,7 +236,7 @@ public class PlayerMovement : MonoBehaviour {
 		controller.Move(velocity * Time.deltaTime);
 
 		//TODO Split velocity into horizontal and vertical until end of Update
-		animator.SetFloat(AnimRunSpeed, GetHorizontal(velocity).magnitude / usedMoveSpeed);
+		animator.SetFloat(AnimRunSpeed, Utility.GetHorizontal(velocity).magnitude / usedMoveSpeed);
 		animator.SetBool(AnimGrounded, controller.isGrounded);
 		if (controller.isGrounded)
 			animator.SetBool(AnimJumping, false);
@@ -259,15 +247,11 @@ public class PlayerMovement : MonoBehaviour {
 	//Not great name, basically when not full air control, like wall jump or getting launched from cannon
 	bool WasPropulsed => jumpType is JumpType.WallJump or JumpType.CrouchBackFlip or JumpType.CrouchLongJump;
 
-	//Could go in utility class
-	static Vector3 GetHorizontal(Vector3 v) => new(v.x, 0f, v.z);
-	static Vector2 GetHorizontal2D(Vector3 v) => new(v.x, v.z);
-
 	//Very temporary debugging, could go in the inspector
 	void OnGUI() {
 		int y = 10;
 		AddGUILabel(ref y, $"Velocity: {velocity}");
-		AddGUILabel(ref y, $"HVel: {(GetHorizontal2D(velocity)).magnitude:F2} m/s");
+		AddGUILabel(ref y, $"HVel: {(Utility.GetHorizontal2D(velocity)).magnitude:F2} m/s");
 		AddGUILabel(ref y, $"Move Angle: {moveAngle:F1}");
 		AddGUILabel(ref y, $"Jump type: {jumpType}");
 		AddGUILabel(ref y, $"Pushing on wall: {pushingOnWall}");
