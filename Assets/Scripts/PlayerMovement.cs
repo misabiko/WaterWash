@@ -16,6 +16,8 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField, Min(0)] float jumpForce = 5;
 	[SerializeField, Min(0)] float crouchBackFlipJumpForce = 20;
 	[SerializeField, Min(0)] float crouchBackFlipHVel = 0.5f;
+	[SerializeField, Min(0)] float crouchLongJumpForce = 12;
+	[SerializeField, Min(0)] float crouchLongJumpHVel = 6;
 	[SerializeField, Min(0)] float longJumpDuration = 0.5f;
 	[SerializeField, Min(0)] float longJumpForce = 3;
 	[SerializeField, Min(0)] float acceleration = 5;
@@ -119,6 +121,7 @@ public class PlayerMovement : MonoBehaviour {
 				moveDirection.Normalize();
 
 			//Wall slide detection
+			//TODO Fix bug where wall sliding until running out of wall stucks you in moonwalk until releasing joystick
 			if (!controller.isGrounded) {
 				Vector3 rayDir = moveDirection.normalized;
 				float rayDistance = controller.radius + wallSlideDetectionDistance;
@@ -212,16 +215,23 @@ public class PlayerMovement : MonoBehaviour {
 				Vector3 flatVel = transform.forward * wallJumpHorizontalVelocity;
 				velocity.x = flatVel.x;
 				velocity.z = flatVel.z;
-				//TODO only crouch backflip if not walking, else crouch long jump
 			} else if (crouching) {
-				velocity.y = crouchBackFlipJumpForce;
-				jumpType = JumpType.CrouchBackFlip;
-				Vector3 flatVel = -transform.forward * crouchBackFlipHVel;
-				//TODO Add myVec.SetHorizontal() utility
-				velocity.x = flatVel.x;
-				velocity.z = flatVel.z;
-				//TODO Crouch back flip animation
-				animator.Play("Jump");
+				if (hVel == Vector3.zero) {
+					velocity.y = crouchBackFlipJumpForce;
+					jumpType = JumpType.CrouchBackFlip;
+					Vector3 flatVel = -transform.forward * crouchBackFlipHVel;
+					//TODO Add myVec.SetHorizontal() utility
+					velocity.x = flatVel.x;
+					velocity.z = flatVel.z;
+					animator.Play("CrouchBackFlip");
+				} else {
+					velocity.y = crouchLongJumpForce;
+					jumpType = JumpType.CrouchLongJump;
+					Vector3 flatVel = transform.forward * crouchLongJumpHVel;
+					velocity.x = flatVel.x;
+					velocity.z = flatVel.z;
+					animator.Play("CrouchLongJump");
+				}
 			} else {
 				velocity.y = jumpForce;
 				jumpType = JumpType.Normal;
@@ -247,7 +257,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	//Not great name, basically when not full air control, like wall jump or getting launched from cannon
-	bool WasPropulsed => jumpType is JumpType.WallJump or JumpType.CrouchBackFlip;
+	bool WasPropulsed => jumpType is JumpType.WallJump or JumpType.CrouchBackFlip or JumpType.CrouchLongJump;
 
 	//Could go in utility class
 	static Vector3 GetHorizontal(Vector3 v) => new(v.x, 0f, v.z);
@@ -275,6 +285,7 @@ enum JumpType {
 	Normal,
 	CrouchBackFlip,
 	CrouchLongJump,
+	Plunge,
 	SpinJump,
 	WallJump,
 }
