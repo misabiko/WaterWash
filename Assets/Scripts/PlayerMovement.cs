@@ -254,6 +254,17 @@ namespace WaterWash {
 			animator.SetBool(AnimCrouching, crouching);
 		}
 
+		public void Teleport(Vector3 position, Vector3? rotation) {
+			controller.enabled = false;
+
+			//TODO Snap camera better
+			transform.position = position;
+			if (rotation is {} rot)
+				transform.eulerAngles = rot;
+
+			controller.enabled = true;
+		}
+
 		//Not great name, basically when not full air control, like wall jump or getting launched from cannon
 		bool WasPropulsed
 			=> jumpType
