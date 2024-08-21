@@ -6677,7 +6677,7 @@ MonoBehaviour:
   sprayAimCamera: {fileID: 1071141308}
   sprayTransform: {fileID: 1120394590}
   animator: {fileID: 1843926249}
-  moveSpeed: 5
+  runSpeed: 5
   crouchSpeed: 2
   jumpForce: 10
   crouchBackFlipJumpForce: 20
@@ -6703,9 +6703,9 @@ MonoBehaviour:
   wallSlideFriction: 34
   horizontalWallSlide: 0
   horizontalWallSlideDeceleration: 1
-  wallJumpHorizontalVelocity: 8
-  wallJumpAcceleration: 3
-  wallJumpDeceleration: 0
+  propulsedHorizontalVelocity: 8
+  propulsedAcceleration: 3
+  propulsedDeceleration: 0
 --- !u!4 &1586036149
 Transform:
   m_ObjectHideFlags: 0

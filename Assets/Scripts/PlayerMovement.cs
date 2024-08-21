@@ -1,6 +1,7 @@
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
 public class PlayerMovement : MonoBehaviour {
@@ -10,7 +11,7 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField] Animator animator;
 
 	[Header("Parameters")]
-	[SerializeField, Min(0)] float moveSpeed = 5;
+	[SerializeField, Min(0)] float runSpeed = 5;
 	[SerializeField, Min(0)] float crouchSpeed = 2;
 	//I say jumpForce, but it's really acceleration, with mass of 1
 	[SerializeField, Min(0)] float jumpForce = 5;
@@ -39,10 +40,9 @@ public class PlayerMovement : MonoBehaviour {
 	[SerializeField, Min(0)] float wallSlideFriction = 1;
 	[SerializeField] bool horizontalWallSlide;
 	[SerializeField, Min(0)] float horizontalWallSlideDeceleration = 5;
-	//TODO Probably generalize "post-wall-jump" params to "limited aerial movement" or something
-	[SerializeField, Min(0)] float wallJumpHorizontalVelocity = 1;
-	[SerializeField, Min(0)] float wallJumpAcceleration = 5;
-	[SerializeField, Min(0)] float wallJumpDeceleration = 10;
+	[SerializeField, Min(0)] float propulsedHorizontalVelocity = 1;
+	[SerializeField, Min(0)] float propulsedAcceleration = 5;
+	[SerializeField, Min(0)] float propulsedDeceleration = 10;
 
 	CharacterController controller;
 	InputAction moveAction;
@@ -107,8 +107,7 @@ public class PlayerMovement : MonoBehaviour {
 		pushingOnWall = false;
 		bool crouching = controller.isGrounded && crouchAction.IsPressed();
 
-		//TODO Rename moveSpeed to runSpeed or something
-		float usedMoveSpeed = crouching ? crouchSpeed : moveSpeed;
+		float usedMoveSpeed = crouching ? crouchSpeed : runSpeed;
 
 		var moveInput = moveAction.ReadValue<Vector2>();
 		Vector3 hVel = Utility.GetHorizontal(velocity);
@@ -155,7 +154,7 @@ public class PlayerMovement : MonoBehaviour {
 				float maxSpeed = WasPropulsed
 					? Mathf.Infinity
 					: usedMoveSpeed * moveDirection.magnitude;
-				float usedAcceleration = WasPropulsed ? wallJumpAcceleration : acceleration;
+				float usedAcceleration = WasPropulsed ? propulsedAcceleration : acceleration;
 				//TODO(2) Vector2?
 				hVel = Vector3.Project(hVel + transform.forward * (moveDirection.magnitude * usedAcceleration * Time.deltaTime), transform.forward);
 				hVel = Vector3.ClampMagnitude(hVel, maxSpeed);
@@ -176,7 +175,7 @@ public class PlayerMovement : MonoBehaviour {
 		if (moveInput == Vector2.zero || WasPropulsed || (pushingOnWall && horizontalWallSlide)) {
 			float usedDeceleration;
 			if (WasPropulsed)
-				usedDeceleration = wallJumpDeceleration;
+				usedDeceleration = propulsedDeceleration;
 			else if (pushingOnWall)
 				usedDeceleration = horizontalWallSlideDeceleration;
 			else
@@ -205,7 +204,7 @@ public class PlayerMovement : MonoBehaviour {
 			if (pushingOnWall) {
 				velocity.y = jumpForce;
 				jumpType = JumpType.WallJump;
-				velocity.SetHorizontal(transform.forward * wallJumpHorizontalVelocity);
+				velocity.SetHorizontal(transform.forward * propulsedHorizontalVelocity);
 			} else if (crouching) {
 				if (hVel == Vector3.zero) {
 					velocity.y = crouchBackFlipJumpForce;
