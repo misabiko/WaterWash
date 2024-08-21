@@ -121,7 +121,6 @@ public class PlayerMovement : MonoBehaviour {
 				moveDirection.Normalize();
 
 			//Wall slide detection
-			//TODO Fix bug where wall sliding until running out of wall stucks you in moonwalk until releasing joystick
 			if (!controller.isGrounded) {
 				Vector3 rayDir = moveDirection.normalized;
 				float rayDistance = controller.radius + wallSlideDetectionDistance;
@@ -158,15 +157,14 @@ public class PlayerMovement : MonoBehaviour {
 					: usedMoveSpeed * moveDirection.magnitude;
 				float usedAcceleration = WasPropulsed ? wallJumpAcceleration : acceleration;
 				//TODO(2) Vector2?
-				//Very confusing vs moveDirection
-				Vector3 directionToMoveIn = hVel.sqrMagnitude > 0 ? hVel.normalized : transform.forward;
-				hVel = Vector3.Project(hVel + directionToMoveIn * (moveDirection.magnitude * usedAcceleration * Time.deltaTime), transform.forward);
+				hVel = Vector3.Project(hVel + transform.forward * (moveDirection.magnitude * usedAcceleration * Time.deltaTime), transform.forward);
 				hVel = Vector3.ClampMagnitude(hVel, maxSpeed);
 				velocity.SetHorizontal(hVel);
 			}
 
 			//Rotation
 			//TODO Reenable rotation (and normal movement) a few seconds after wall jump
+			//TODO Faster turn around anim/rotation when near 180°
 			if (!aimAction.IsPressed() && !pushingOnWall && !WasPropulsed) {
 				float rotationSpeed = hVel.sqrMagnitude > 0 ? movingRotationSpeed : stoppedRotationSpeed;
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(moveDirection), rotationSpeed * Time.deltaTime);
@@ -262,6 +260,11 @@ public class PlayerMovement : MonoBehaviour {
 	static void AddGUILabel(ref int y, string text) {
 		GUI.Label(new Rect(10, y, Screen.width, 20), text);
 		y += 20;
+	}
+
+	void DrawArrow(Vector3 direction, Color color) {
+		Vector3 bottom = transform.position + Vector3.down * controller.height / 2;
+		Debug.DrawLine(bottom, bottom + direction, color);
 	}
 }
 

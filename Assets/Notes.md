@@ -11,26 +11,27 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 2 Hover nuzzle mode
 - 2 Have dirt mask pixel same size regardless of mesh scale
 - 2 Plunge move
-- 1 Test level
+- 2 Test level
 - 1 Make particles look like water
 - 1 Fix camera being controlled by mouse on boot
-- 0 Get dirtiness percentage
+- 1 Water resource
+- 1 Get dirtiness percentage
 - 0 Dirtiness texture
 - 0 Spin jump
 - 0 Coyote time (might be weird with capsule collider?)
 - 0 Moving platforms
 - 0 Objects coming out of ground when cleaned
 - 0 3rd person to aiming camera transition
-- 0 Water resource
 - 0 Lean to the side when turning while running
 - 0 Debug sprayer object with primitives
-- 0 Water sprayer model
 - 0 Water slide after plunge
-- 0 Original player model
-- 0 Normal map to elevate dirt
 - 0 Better spray hose vibe, being able to draw on walls
+- 0 Sliding crouch
 - 0 (Gold) Coins or the equivalent
+- 0 Normal map to elevate dirt
 - 0 Swimming
+- 0 Original player model
+- 0 Water sprayer model
 - 0 Split PlayerMovement.Update() into smaller methods
 - 0 Add namespace
 
