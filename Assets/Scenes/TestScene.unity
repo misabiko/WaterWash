@@ -11449,8 +11449,8 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 2272aad0-e026-43e0-a6dc-09e2e9b81578
     m_ActionName: 'Player/Spray[/XInputControllerWindows/rightTrigger,/Mouse/leftButton]'
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: Gamepad
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 330585545}
@@ -11508,9 +11508,11 @@ MonoBehaviour:
   longJumpForce: 20
   acceleration: 20
   deceleration: 20
+  slidingDeceleration: 15
   maxAngleToStartMoving: 45
   stoppedRotationSpeed: 700
   movingRotationSpeed: 500
+  slidingRotationSpeed: 50
   aimRotateSpeed: 100
   minYSprayAngle: -40
   maxYSprayAngle: 30

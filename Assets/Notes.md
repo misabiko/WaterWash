@@ -11,12 +11,12 @@ https://captainripley.itch.io/godot-3d-robot-character
 # TODOs
 - 2 Hover nuzzle mode
 - 2 Example platforming level
-- 2 Sliding crouch
 - 2 Make particles look like water
 - 2 Water slide after plunge
 - 2 Normal map to elevate dirt
 - 1 Get dirtiness percentage
 - 1 3rd person to aiming camera transition
+- 1 Fix aim mode
 - 0 Spin jump
 - 0 Coyote time (might be weird with capsule collider?)
 - 0 Moving platforms
