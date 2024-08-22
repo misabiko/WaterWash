@@ -15,21 +15,24 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 2 Water slide after plunge
 - 2 Normal map to elevate dirt
 - 1 Get dirtiness percentage
-- 1 3rd person to aiming camera transition
+- 1 Inspect values without adding random field variables
 - 0 Spin jump
 - 0 Coyote time (might be weird with capsule collider?)
 - 0 Moving platforms
-- 0 Animation lean to the side when turning while running
 - 0 Debug sprayer object with primitives
 - 0 (Gold) Coins or the equivalent
 - 0 Swimming
 - 0 Vibrate controller on spray
+- 0 Press jump during plunge slide to do forward jump
+- 0 Lightly press aim trigger to enter aim mode without changing camera
+- 0 Keep camera Y still on jump
+
+## Polishing
 - 0 Dirtiness texture
 - 0 Water sprayer model
 - 0 Original player model
+- 0 Animation lean to the side when turning while running
 - 0 Split PlayerMovement.Update() into smaller methods
-- 0 Press jump during plunge slide to do forward jump
-- 0 Lightly press aim trigger to enter aim mode without changing camera
 
 ## More optional
 - 1 Splash water on wall to slide further (wet mask?)

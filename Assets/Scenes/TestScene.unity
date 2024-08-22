@@ -327,6 +327,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd4c767939e54ca8b68b5352a3faecac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &210906518
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 210906519}
+  m_Layer: 0
+  m_Name: XRotationOffset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &210906519
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210906518}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.3420201, y: 0, z: 0, w: 0.9396927}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1120394590}
+  - {fileID: 301089562}
+  m_Father: {fileID: 1145716878}
+  m_LocalEulerAnglesHint: {x: -40, y: 0, z: 0}
 --- !u!1 &301089561
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,12 +387,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 301089561}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1145716878}
+  m_Father: {fileID: 210906519}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!199 &301089563
 ParticleSystemRenderer:
@@ -5323,7 +5356,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 63.708584
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -5423,8 +5456,8 @@ MonoBehaviour:
     Enabled: 0
     DefaultMode: 2
   DefaultBlend:
-    Style: 0
-    Time: 2
+    Style: 1
+    Time: 0.2
     CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -5875,7 +5908,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Priority:
-    Enabled: 0
+    Enabled: 1
     m_Value: 0
   OutputChannel: 1
   StandbyUpdate: 2
@@ -5886,7 +5919,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 63.708584
+    FieldOfView: 60
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
@@ -5904,7 +5937,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  BlendHint: 0
+  BlendHint: 24
 --- !u!4 &698027694
 Transform:
   m_ObjectHideFlags: 0
@@ -6035,7 +6068,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1071141308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6050,13 +6083,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Priority:
     Enabled: 1
-    m_Value: 0
+    m_Value: -1
   OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 1120394590}
+    TrackingTarget: {fileID: 1145716878}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -6078,7 +6111,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  BlendHint: 0
+  BlendHint: 16
 --- !u!114 &1071141309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6110,8 +6143,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damping: {x: 0.1, y: 0.1, z: 0.3}
-  ShoulderOffset: {x: 2.4, y: 1.61, z: 0}
-  VerticalArmLength: 0.4
+  ShoulderOffset: {x: 0, y: 0.5, z: 0}
+  VerticalArmLength: 0.34
   CameraSide: 0.5
   CameraDistance: 4.42
   AvoidObstacles:
@@ -6131,8 +6164,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1071141307}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.34816316, y: 0, z: 0, w: 0.93743396}
-  m_LocalPosition: {x: 0, y: 1.6478269, z: -3.5795407}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.4599998, z: -4.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6165,12 +6198,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1120394589}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1145716878}
+  m_Father: {fileID: 210906519}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!199 &1120394591
 ParticleSystemRenderer:
@@ -6386,7 +6419,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 25.06
+      scalar: 17.9
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -6828,7 +6861,7 @@ ParticleSystem:
     gravityModifier:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2.2
+      scalar: 1
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -11011,13 +11044,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1145716877}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.3481631, y: -0, z: -0, w: 0.9374341}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.76999986, z: 0.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1120394590}
-  - {fileID: 301089562}
+  - {fileID: 210906519}
   m_Father: {fileID: 1586036149}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1294278454
@@ -11493,7 +11525,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 698027693}
   sprayAimCamera: {fileID: 1071141308}
-  sprayTransform: {fileID: 1120394590}
+  sprayTransform: {fileID: 1145716878}
   animator: {fileID: 1843926249}
   runSpeed: 5
   crouchSpeed: 2
@@ -11514,7 +11546,7 @@ MonoBehaviour:
   movingRotationSpeed: 500
   slidingRotationSpeed: 50
   aimRotateSpeed: 100
-  minYSprayAngle: -60
+  minYSprayAngle: -45
   maxYSprayAngle: 80
   wallSlideMask:
     serializedVersion: 2

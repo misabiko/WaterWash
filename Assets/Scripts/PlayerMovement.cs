@@ -1,7 +1,6 @@
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace WaterWash {
 	[RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
@@ -101,22 +100,21 @@ namespace WaterWash {
 
 		void Update() {
 			{
-				if (aimAction.WasPressedThisFrame()) {
-					sprayAimCamera.gameObject.SetActive(true);
-					//Eyeballed around 40 degrees between the camera and the spray
-					sprayTransform.localEulerAngles = new Vector3(mainCamera.transform.localEulerAngles.x + 40f, 0, 0);
-				}else if (aimAction.WasReleasedThisFrame())
-					sprayAimCamera.gameObject.SetActive(false);
+				if (aimAction.WasPressedThisFrame())
+					sprayAimCamera.Priority.Value = 1000;
+				else if (aimAction.WasReleasedThisFrame())
+					sprayAimCamera.Priority.Value = -1;
 
 				if (aimAction.IsPressed()) {
 					var look = lookAction.ReadValue<Vector2>();
 					transform.Rotate(Vector3.up, look.x * aimRotateSpeed * Time.deltaTime);
 					sprayTransform.Rotate(Vector3.right, -look.y * aimRotateSpeed * Time.deltaTime);
 
-					if (sprayTransform.localEulerAngles.x >= 180f)
-						sprayTransform.localEulerAngles = new Vector3(Mathf.Max(sprayTransform.localEulerAngles.x, 360f + minYSprayAngle), 0, 0);
-					else
-						sprayTransform.localEulerAngles = new Vector3(Mathf.Min(sprayTransform.localEulerAngles.x, maxYSprayAngle), 0, 0);
+					float camX = sprayTransform.localEulerAngles.x >= 180f
+						? Mathf.Max(sprayTransform.localEulerAngles.x, 360f + minYSprayAngle)
+						: Mathf.Min(sprayTransform.localEulerAngles.x, maxYSprayAngle);
+
+					sprayTransform.localEulerAngles = new Vector3(camX, 0, 0);
 				}
 			}
 
@@ -322,6 +320,7 @@ namespace WaterWash {
 			Utility.AddGUILabel(ref y, $"Spray Cam Angle: {sprayAimCamera.transform.localEulerAngles.x:F2}");
 		}
 
+		// ReSharper disable once UnusedMember.Local
 		void DrawArrow(Vector3 direction, Color color) {
 			Vector3 bottom = transform.position + Vector3.down * controller.height / 2;
 			Debug.DrawLine(bottom, bottom + direction, color);
