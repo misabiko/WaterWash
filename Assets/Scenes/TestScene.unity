@@ -11491,7 +11491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61aa7f41ca39bf94da455613b8523e17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camInputAxisController: {fileID: 698027689}
+  mainCamera: {fileID: 698027693}
   sprayAimCamera: {fileID: 1071141308}
   sprayTransform: {fileID: 1120394590}
   animator: {fileID: 1843926249}
@@ -11514,8 +11514,8 @@ MonoBehaviour:
   movingRotationSpeed: 500
   slidingRotationSpeed: 50
   aimRotateSpeed: 100
-  minYSprayAngle: -40
-  maxYSprayAngle: 30
+  minYSprayAngle: -60
+  maxYSprayAngle: 80
   wallSlideMask:
     serializedVersion: 2
     m_Bits: 128

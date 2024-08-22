@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 namespace WaterWash {
 	[RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
 	public class PlayerMovement : MonoBehaviour {
-		[SerializeField] CinemachineInputAxisController camInputAxisController;
+		[SerializeField] CinemachineCamera mainCamera;
 		[SerializeField] CinemachineCamera sprayAimCamera;
 		[SerializeField] Transform sprayTransform;
 		[SerializeField] Animator animator;
@@ -101,12 +101,13 @@ namespace WaterWash {
 
 		void Update() {
 			{
-				if (aimAction.WasPressedThisFrame())
+				if (aimAction.WasPressedThisFrame()) {
 					sprayAimCamera.gameObject.SetActive(true);
-				else if (aimAction.WasReleasedThisFrame())
+					//Eyeballed around 40 degrees between the camera and the spray
+					sprayTransform.localEulerAngles = new Vector3(mainCamera.transform.localEulerAngles.x + 40f, 0, 0);
+				}else if (aimAction.WasReleasedThisFrame())
 					sprayAimCamera.gameObject.SetActive(false);
 
-				//TODO Fix aim movement
 				if (aimAction.IsPressed()) {
 					var look = lookAction.ReadValue<Vector2>();
 					transform.Rotate(Vector3.up, look.x * aimRotateSpeed * Time.deltaTime);
@@ -175,12 +176,13 @@ namespace WaterWash {
 
 				//Horizontal Movement
 				moveAngle = Vector2.Angle(Utility.GetHorizontal2D(moveDirection), Utility.GetHorizontal2D(transform.forward));
-				if ((hVel.sqrMagnitude > 0 || moveAngle < maxAngleToStartMoving) && !pushingOnWall) {
+				if ((hVel.sqrMagnitude > 0 || moveAngle < maxAngleToStartMoving || aimAction.IsPressed()) && !pushingOnWall) {
 					float usedAcceleration = WasPropulsed ? propulsedAcceleration : acceleration;
+					Vector3 direction = aimAction.IsPressed() ? moveDirection.normalized : transform.forward;
 
 					if (hVel.sqrMagnitude < maxSpeed * maxSpeed)
-						hVel += transform.forward * (moveDirection.magnitude * usedAcceleration * Time.deltaTime);
-					hVel = Vector3.Project(hVel, transform.forward);
+						hVel += direction * (moveDirection.magnitude * usedAcceleration * Time.deltaTime);
+					hVel = Vector3.Project(hVel, direction);
 					velocity.SetHorizontal(hVel);
 				}
 
@@ -315,6 +317,9 @@ namespace WaterWash {
 			Utility.AddGUILabel(ref y, $"Pushing on wall: {pushingOnWall}");
 			Utility.AddGUILabel(ref y, $"Wall Slope: {wallSlopiness}");
 			Utility.AddGUILabel(ref y, $"Wall H Angle: {wallHorizontalAngle}");
+			Utility.AddGUILabel(ref y, $"Spray Angle: {(sprayTransform.localEulerAngles.x - 40f):F2}");
+			Utility.AddGUILabel(ref y, $"Cam Angle: {mainCamera.transform.localEulerAngles.x:F2}");
+			Utility.AddGUILabel(ref y, $"Spray Cam Angle: {sprayAimCamera.transform.localEulerAngles.x:F2}");
 		}
 
 		void DrawArrow(Vector3 direction, Color color) {
