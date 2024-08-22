@@ -35,6 +35,8 @@ namespace WaterWash {
 		//Unity doesn't have a MaxAttribute...
 		[SerializeField] float minYSprayAngle = -40;
 		[SerializeField, Min(0)] float maxYSprayAngle = 30;
+		[SerializeField, Range(0, 1)] float partialAimThreshold = 0.2f;
+		[SerializeField, Range(0, 1)] float fullAimThreshold = 0.8f;
 
 		[Header("Wall Slide/Jump")]
 		[SerializeField] LayerMask wallSlideMask;
@@ -61,7 +63,6 @@ namespace WaterWash {
 		float? jumpStartTime;
 		bool pushingOnWall;
 		JumpTypes? _jumpType;
-
 		JumpTypes? JumpType {
 			get => _jumpType;
 			set {
@@ -70,14 +71,15 @@ namespace WaterWash {
 					sliding = value is JumpTypes.Plunge or JumpTypes.CrouchLongJump;
 			}
 		}
-
 		// When landing from long jump/plunge
 		bool sliding;
+		AimMode lastAimMode;
 
-		float wallSlopiness;//Debugging
-		float wallHorizontalAngle;//Debugging
-		float? moveAngle;//Debugging
-		float maxSpeed;//Debugging
+		AimMode _inspectAimMode;
+		float _inspectWallSlopiness;
+		float _inspectWallHorizontalAngle;
+		float? _inspectMoveAngle;
+		float _inspectMaxSpeed;
 
 		static readonly int AnimRunSpeed = Animator.StringToHash("RunSpeed");
 		static readonly int AnimJumping = Animator.StringToHash("Jumping");
@@ -99,13 +101,26 @@ namespace WaterWash {
 		}
 
 		void Update() {
+			AimMode aimMode;
 			{
-				if (aimAction.WasPressedThisFrame())
-					sprayAimCamera.Priority.Value = 1000;
-				else if (aimAction.WasReleasedThisFrame())
-					sprayAimCamera.Priority.Value = -1;
+				//There might be a way to do this in InputSettings directly, but idk how
+				float value = aimAction.ReadValue<float>();
+				if (value >= fullAimThreshold) {
+					aimMode = AimMode.Full;
+					if (lastAimMode is not AimMode.Full)
+						sprayAimCamera.Priority.Value = 1000;
+				}else {
+					if (value >= partialAimThreshold)
+						aimMode = AimMode.Partial;
+					else
+						aimMode = AimMode.Inactive;
 
-				if (aimAction.IsPressed()) {
+					if (lastAimMode is AimMode.Full)
+						sprayAimCamera.Priority.Value = -1;
+				}
+			}
+			{
+				if (aimMode is AimMode.Full) {
 					var look = lookAction.ReadValue<Vector2>();
 					transform.Rotate(Vector3.up, look.x * aimRotateSpeed * Time.deltaTime);
 					sprayTransform.Rotate(Vector3.right, -look.y * aimRotateSpeed * Time.deltaTime);
@@ -137,7 +152,7 @@ namespace WaterWash {
 			if (moveDirection.sqrMagnitude > 1)
 				moveDirection.Normalize();
 
-			maxSpeed = WasPropulsed
+			float maxSpeed = WasPropulsed
 				? Mathf.Infinity
 				: usedMoveSpeed * moveDirection.magnitude;
 
@@ -151,8 +166,10 @@ namespace WaterWash {
 
 					if (Physics.Raycast(transform.position, rayDir, out RaycastHit hit, rayDistance, wallSlideMask)) {
 						//sloppy way to get the pitch angle of the wall, like its wall to slope ratio, as opposed to the angle of how much the player is pointing toward the wall
-						wallSlopiness = Mathf.Abs(hit.normal.y);
-						wallHorizontalAngle = Vector2.Angle(-(Utility.GetHorizontal2D(hit.normal)), Utility.GetHorizontal2D(rayDir));
+						float wallSlopiness = Mathf.Abs(hit.normal.y);
+						_inspectWallSlopiness = wallSlopiness;
+						float wallHorizontalAngle = Vector2.Angle(-(Utility.GetHorizontal2D(hit.normal)), Utility.GetHorizontal2D(rayDir));
+						_inspectWallHorizontalAngle = wallHorizontalAngle;
 
 						if (wallSlopiness <= wallMaxSlopiness && wallHorizontalAngle <= wallSlideMaxHorizontalAngle) {
 							pushingOnWall = true;
@@ -173,10 +190,11 @@ namespace WaterWash {
 				}
 
 				//Horizontal Movement
-				moveAngle = Vector2.Angle(Utility.GetHorizontal2D(moveDirection), Utility.GetHorizontal2D(transform.forward));
-				if ((hVel.sqrMagnitude > 0 || moveAngle < maxAngleToStartMoving || aimAction.IsPressed()) && !pushingOnWall) {
+				float moveAngle = Vector2.Angle(Utility.GetHorizontal2D(moveDirection), Utility.GetHorizontal2D(transform.forward));
+				_inspectMoveAngle = moveAngle;
+				if ((hVel.sqrMagnitude > 0 || moveAngle < maxAngleToStartMoving || aimMode is not AimMode.Inactive) && !pushingOnWall) {
 					float usedAcceleration = WasPropulsed ? propulsedAcceleration : acceleration;
-					Vector3 direction = aimAction.IsPressed() ? moveDirection.normalized : transform.forward;
+					Vector3 direction = aimMode is not AimMode.Inactive ? moveDirection.normalized : transform.forward;
 
 					if (hVel.sqrMagnitude < maxSpeed * maxSpeed)
 						hVel += direction * (moveDirection.magnitude * usedAcceleration * Time.deltaTime);
@@ -187,7 +205,7 @@ namespace WaterWash {
 				//Rotation
 				//TODO Reenable rotation (and normal movement) a few seconds after wall jump
 				//TODO Faster turn around anim/rotation when near 180°
-				if (!aimAction.IsPressed() && !pushingOnWall && !WasPropulsed) {
+				if (aimMode is AimMode.Inactive && !pushingOnWall && !WasPropulsed) {
 					float rotationSpeed;
 					if (sliding)
 						rotationSpeed = slidingRotationSpeed;
@@ -198,7 +216,7 @@ namespace WaterWash {
 					transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(moveDirection), rotationSpeed * Time.deltaTime);
 				}
 			} else
-				moveAngle = null;
+				_inspectMoveAngle = null;
 
 			//Horizontal deceleration
 			/*if (moveInput == Vector2.zero || WasPropulsed || (pushingOnWall && horizontalWallSlide))*/
@@ -281,6 +299,11 @@ namespace WaterWash {
 			animator.SetBool(AnimPushingOnWall, pushingOnWall);
 			animator.SetBool(AnimCrouching, crouching);
 			animator.SetBool(AnimSliding, sliding);
+			
+			lastAimMode = aimMode;
+			
+			_inspectAimMode = aimMode;
+			_inspectMaxSpeed = maxSpeed;
 		}
 
 		public void Teleport(Vector3 position, Vector3? rotation) {
@@ -308,16 +331,18 @@ namespace WaterWash {
 			int y = 10;
 			Utility.AddGUILabel(ref y, $"Velocity: {velocity}");
 			Utility.AddGUILabel(ref y, $"HVel: {(Utility.GetHorizontal2D(velocity)).magnitude:F2} m/s");
-			Utility.AddGUILabel(ref y, $"maxSpeed: {maxSpeed:F2} m/s");
-			Utility.AddGUILabel(ref y, $"sliding: {sliding}");
-			Utility.AddGUILabel(ref y, $"Move Angle: {moveAngle:F1}");
+			Utility.AddGUILabel(ref y, $"maxSpeed: {_inspectMaxSpeed:F2} m/s");
+			Utility.AddGUILabel(ref y, $"Move Angle: {_inspectMoveAngle:F1}");
 			Utility.AddGUILabel(ref y, $"Jump type: {JumpType}");
-			Utility.AddGUILabel(ref y, $"Pushing on wall: {pushingOnWall}");
-			Utility.AddGUILabel(ref y, $"Wall Slope: {wallSlopiness}");
-			Utility.AddGUILabel(ref y, $"Wall H Angle: {wallHorizontalAngle}");
-			Utility.AddGUILabel(ref y, $"Spray Angle: {(sprayTransform.localEulerAngles.x - 40f):F2}");
-			Utility.AddGUILabel(ref y, $"Cam Angle: {mainCamera.transform.localEulerAngles.x:F2}");
-			Utility.AddGUILabel(ref y, $"Spray Cam Angle: {sprayAimCamera.transform.localEulerAngles.x:F2}");
+			// Utility.AddGUILabel(ref y, $"sliding: {sliding}");
+			// Utility.AddGUILabel(ref y, $"Pushing on wall: {pushingOnWall}");
+			// Utility.AddGUILabel(ref y, $"Wall Slope: {_inspectWallSlopiness}");
+			// Utility.AddGUILabel(ref y, $"Wall H Angle: {_inspectWallHorizontalAngle}");
+			// Utility.AddGUILabel(ref y, $"Spray Angle: {(sprayTransform.localEulerAngles.x - 40f):F2}");
+			// Utility.AddGUILabel(ref y, $"Cam Angle: {mainCamera.transform.localEulerAngles.x:F2}");
+			// Utility.AddGUILabel(ref y, $"Spray Cam Angle: {sprayAimCamera.transform.localEulerAngles.x:F2}");
+			Utility.AddGUILabel(ref y, $"Aim Input: {aimAction.ReadValue<float>():F2}");
+			Utility.AddGUILabel(ref y, $"Aim Mode: {_inspectAimMode}");
 		}
 
 		// ReSharper disable once UnusedMember.Local
@@ -334,5 +359,11 @@ namespace WaterWash {
 		Plunge,
 		SpinJump,
 		WallJump,
+	}
+
+	enum AimMode {
+		Inactive,
+		Partial,
+		Full,
 	}
 }

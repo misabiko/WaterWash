@@ -61,12 +61,12 @@
                 },
                 {
                     "name": "Aim",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "5380693b-e4a0-44ef-b964-cf8b30a3388e",
-                    "expectedControlType": "",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Spray",

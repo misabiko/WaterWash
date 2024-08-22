@@ -24,8 +24,8 @@ https://captainripley.itch.io/godot-3d-robot-character
 - 0 Swimming
 - 0 Vibrate controller on spray
 - 0 Press jump during plunge slide to do forward jump
-- 0 Lightly press aim trigger to enter aim mode without changing camera
 - 0 Keep camera Y still on jump
+- 0 First person aim mode
 
 ## Polishing
 - 0 Dirtiness texture
