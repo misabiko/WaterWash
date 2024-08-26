@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace WaterWash {
@@ -12,23 +14,27 @@ namespace WaterWash {
 		[HideInInspector] public bool canRecharge;
 
 		[Header("Hover Nozzle")]
-		[SerializeField, Min(0)] float maxHoverDuration = 5f;
+		[SerializeField, Min(0)] float maxHoverTime = 20f;
 		[SerializeField, Min(0)] float maxHoverHeight = 15f;
 		[SerializeField] float hoverVelocity = 5f;
 		[SerializeField] bool hoverIsActivated = false;
 
 		InputAction sprayAction;
 		InputAction interactAction;
+		PlayerMovement playerMovement;
+
 		//Would like to make int, but it gets weird with scaling by 0-1 input and deltaTime
 		float waterLevel;
 		bool isSpraying;
 
 		float waterPackBaseHeight;
 		float waterPackBaseY;
+		float hoverTimeLeft;
 
 		void Awake() {
 			sprayAction = GetComponent<PlayerInput>().actions["Spray"];
 			interactAction = GetComponent<PlayerInput>().actions["Interact"];
+			playerMovement = GetComponent<PlayerMovement>();
 			interactAction.performed += ctx =>
 			{
 				hoverIsActivated = !hoverIsActivated;
@@ -37,6 +43,7 @@ namespace WaterWash {
 			waterLevel = maxWaterLevel;
 			waterPackBaseHeight = waterPack.localScale.y;
 			waterPackBaseY = waterPack.localPosition.y;
+			hoverTimeLeft = maxHoverTime;
 		}
 
         void OnEnable()
@@ -58,9 +65,14 @@ namespace WaterWash {
 				waterParticles.SetEmissionRate(waterLevel > 0 ? sprayInput : 0);
 				waterLevel = Mathf.Max(0, waterLevel - sprayInput * consumptionRate * Time.deltaTime);
 				isSpraying = sprayInput > 0 && waterLevel > 0;
-				if (hoverIsActivated && )
+				if (hoverIsActivated && isSpraying &&  hoverTimeLeft > 0)
 				{
-
+					hoverTimeLeft = -Time.deltaTime;
+					playerMovement.Hover();
+				}
+				else
+				{
+					RestartTimer();
 				}
 			}
 		}
@@ -80,6 +92,12 @@ namespace WaterWash {
 			int y = Screen.height / 2;
 			Utility.AddGUILabel(ref y, $"Water level: {waterLevel:F1}");
 			Utility.AddGUILabel(ref y, $"Can recharge: {canRecharge}");
+		}
+
+		IEnumerator RestartTimer()
+		{
+			hoverTimeLeft = maxHoverTime;
+			yield return null;
 		}
 	}
 }
