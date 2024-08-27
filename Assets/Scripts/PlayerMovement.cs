@@ -58,6 +58,10 @@ namespace WaterWash {
 		InputAction plungeAction;
 		InputAction aimAction;
 
+		[Header("Hover Nozzle")]
+		[SerializeField, Min(0)] float maxHoverHeight = 15f;
+		[SerializeField, Min(0)] float maxHoverVelocity = 5f;
+
 		Vector3 velocity;
 		//Not null if the player is holding jump
 		float? jumpStartTime;
@@ -349,6 +353,23 @@ namespace WaterWash {
 		void DrawArrow(Vector3 direction, Color color) {
 			Vector3 bottom = transform.position + Vector3.down * controller.height / 2;
 			Debug.DrawLine(bottom, bottom + direction, color);
+		}
+
+		public void Hover()
+		{
+			
+			if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out RaycastHit hit)){
+				if (hit.transform.CompareTag("Ground") && hit.distance < maxHoverHeight)
+				{
+					velocity.y = maxHoverVelocity;
+				}
+				else
+				{
+					velocity.y = 0;
+				}
+			}
+			controller.Move(velocity);
+			
 		}
 	}
 
