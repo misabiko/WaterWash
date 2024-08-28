@@ -84,6 +84,7 @@ namespace WaterWash {
 		float _inspectWallHorizontalAngle;
 		float? _inspectMoveAngle;
 		float _inspectMaxSpeed;
+		Vector3 _inspectMoveDirection;
 
 		static readonly int AnimRunSpeed = Animator.StringToHash("RunSpeed");
 		static readonly int AnimJumping = Animator.StringToHash("Jumping");
@@ -155,6 +156,7 @@ namespace WaterWash {
 			Vector3 moveDirection = camForward * moveInput.y + Camera.main.transform.right * moveInput.x;
 			if (moveDirection.sqrMagnitude > 1)
 				moveDirection.Normalize();
+			_inspectMoveDirection = moveDirection;
 
 			float maxSpeed = WasPropulsed
 				? Mathf.Infinity
@@ -336,6 +338,7 @@ namespace WaterWash {
 			Utility.AddGUILabel(ref y, $"Velocity: {velocity}");
 			Utility.AddGUILabel(ref y, $"HVel: {(Utility.GetHorizontal2D(velocity)).magnitude:F2} m/s");
 			Utility.AddGUILabel(ref y, $"maxSpeed: {_inspectMaxSpeed:F2} m/s");
+			Utility.AddGUILabel(ref y, $"Move Direction: {_inspectMoveDirection}");
 			Utility.AddGUILabel(ref y, $"Move Angle: {_inspectMoveAngle:F1}");
 			Utility.AddGUILabel(ref y, $"Jump type: {JumpType}");
 			// Utility.AddGUILabel(ref y, $"sliding: {sliding}");
@@ -368,8 +371,6 @@ namespace WaterWash {
 					velocity.y = 0;
 				}
 			}
-			controller.Move(velocity);
-			
 		}
 	}
 

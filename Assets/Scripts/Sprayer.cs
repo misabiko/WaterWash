@@ -32,8 +32,9 @@ namespace WaterWash {
 		float hoverTimeLeft;
 
 		void Awake() {
-			sprayAction = GetComponent<PlayerInput>().actions["Spray"];
-			interactAction = GetComponent<PlayerInput>().actions["Interact"];
+			var playerInput = GetComponent<PlayerInput>();
+			sprayAction = playerInput.actions["Spray"];
+			interactAction = playerInput.actions["Interact"];
 			playerMovement = GetComponent<PlayerMovement>();
 			interactAction.performed += ctx =>
 			{
@@ -67,7 +68,7 @@ namespace WaterWash {
 				isSpraying = sprayInput > 0 && waterLevel > 0;
 				if (hoverIsActivated && isSpraying &&  hoverTimeLeft > 0)
 				{
-					hoverTimeLeft = -Time.deltaTime;
+					hoverTimeLeft -= Time.deltaTime;
 					playerMovement.Hover();
 				}
 				else
@@ -92,12 +93,10 @@ namespace WaterWash {
 			int y = Screen.height / 2;
 			Utility.AddGUILabel(ref y, $"Water level: {waterLevel:F1}");
 			Utility.AddGUILabel(ref y, $"Can recharge: {canRecharge}");
+			Utility.AddGUILabel(ref y, $"hoverIsActivated: {hoverIsActivated}");
+			Utility.AddGUILabel(ref y, $"hoverTimeLeft: {hoverTimeLeft}");
 		}
 
-		IEnumerator RestartTimer()
-		{
-			hoverTimeLeft = maxHoverTime;
-			yield return null;
-		}
+		void RestartTimer() => hoverTimeLeft = maxHoverTime;
 	}
 }
